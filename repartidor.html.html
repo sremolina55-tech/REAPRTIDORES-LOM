@@ -20,95 +20,127 @@
   --amber:#c87820;--amber-dim:rgba(200,120,32,0.12);
   --blue:#4878c8;--blue-dim:rgba(72,120,200,0.12);
   --gray:#888;--gray-dim:rgba(136,136,136,0.1);
-  --purple:#7c4daa;--purple-dim:rgba(124,77,170,0.12);
 }
 html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--text);font-size:16px;}
-.header{background:var(--rosa);padding:18px 20px;text-align:center;position:sticky;top:0;z-index:50;}
+.header{background:var(--rosa);padding:18px 20px;text-align:center;}
 .header-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:600;color:#fff;letter-spacing:2px;}
 .header-sub{font-size:11px;color:rgba(255,255,255,0.75);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase;}
 .content{padding:20px 16px 48px;max-width:480px;margin:0 auto;}
-.steps{display:flex;gap:6px;margin-bottom:24px;}
-.step{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.3s;}
-.step.done{background:var(--green);}
-.step.active{background:var(--rosa);}
+
+/* SELECCION CONDUCTOR */
+.screen{display:none;}
+.screen.active{display:block;}
+
+.conductor-titulo{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;text-align:center;margin-bottom:6px;color:var(--text);}
+.conductor-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:20px;}
+
+.conductores-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.conductor-card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;position:relative;}
+.conductor-card:active{transform:scale(0.97);}
+.conductor-card.selected{border-color:var(--rosa);background:var(--rosa-dim);}
+.conductor-avatar{width:52px;height:52px;border-radius:50%;background:var(--rosa);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;font-weight:700;color:#fff;}
+.conductor-nombre{font-size:14px;font-weight:600;color:var(--text);line-height:1.3;}
+.conductor-count{font-size:11px;color:var(--text3);margin-top:4px;}
+.conductor-count.pending{color:var(--amber);font-weight:600;}
+
+.btn-continuar{width:100%;background:var(--rosa);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;-webkit-appearance:none;transition:all 0.2s;}
+.btn-continuar:active{background:var(--rosa-dark);}
+.btn-continuar:disabled{background:var(--border2);color:#fff;}
+
+/* FACTURAS DEL DIA */
+.back-btn{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--rosa);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;padding:0;margin-bottom:16px;}
+.back-btn span{font-size:18px;}
+
+.conductor-header{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.conductor-avatar-lg{width:48px;height:48px;border-radius:50%;background:var(--rosa);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.conductor-info-nombre{font-size:17px;font-weight:700;}
+.conductor-info-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.stat-mini{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.stat-mini-val{font-size:22px;font-weight:700;}
+.stat-mini-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.stat-mini.green .stat-mini-val{color:var(--green);}
+.stat-mini.amber .stat-mini-val{color:var(--amber);}
+.stat-mini.rosa .stat-mini-val{color:var(--rosa);}
+
+.facturas-section{margin-bottom:14px;}
+.section-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:600;margin-bottom:10px;}
+
+.factura-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;border-left:4px solid var(--border);}
+.factura-item:active{transform:scale(0.98);}
+.factura-item.pendiente{border-left-color:var(--amber);}
+.factura-item.entregada{border-left-color:var(--green);}
+.factura-item.novedad{border-left-color:var(--rosa);}
+.factura-item.devuelta{border-left-color:var(--red);}
+
+.fi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.fi-consec{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--rosa);}
+.fi-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;}
+.fi-badge.pendiente{background:var(--amber-dim);color:var(--amber);}
+.fi-badge.entregada{background:var(--green-dim);color:var(--green);}
+.fi-badge.novedad{background:var(--rosa-dim);color:var(--rosa);}
+.fi-badge.devuelta{background:var(--red-dim);color:var(--red);}
+.fi-cliente{font-size:14px;font-weight:500;color:var(--text);}
+.fi-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+
+/* FORMULARIO ENTREGA */
 .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(232,69,110,0.06);}
 .sec-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:14px;font-weight:600;}
 .label{display:block;font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:500;}
-.input{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-size:20px;font-family:inherit;outline:none;transition:border-color 0.2s;-webkit-appearance:none;font-weight:600;letter-spacing:1px;}
+.input{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
 .input:focus{border-color:var(--rosa);background:#fff;}
-.input::placeholder{color:var(--text3);font-size:15px;font-weight:400;letter-spacing:0;}
-.input.normal{font-size:15px;font-weight:400;letter-spacing:0;}
-.factura-info{background:var(--rosa-dim);border:1px solid rgba(232,69,110,0.25);border-radius:12px;padding:14px 16px;margin-top:10px;display:none;}
-.factura-info.show{display:block;}
-.fi-cliente{font-size:16px;font-weight:600;}
-.fi-meta{font-size:13px;color:var(--text2);margin-top:4px;}
 
-/* OPCIONES GRANDES */
 .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.opts-grid.tres{grid-template-columns:1fr 1fr 1fr;}
 .big-opt{background:var(--cream);border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
 .big-opt:active{transform:scale(0.97);}
 .big-opt.sel-green{border-color:var(--green);background:var(--green-dim);}
-.big-opt.sel-amber{border-color:var(--amber);background:var(--amber-dim);}
 .big-opt.sel-red{border-color:var(--red);background:var(--red-dim);}
-.big-opt.sel-blue{border-color:var(--blue);background:var(--blue-dim);}
-.big-opt.sel-gray{border-color:var(--gray);background:var(--gray-dim);}
-.big-opt.sel-purple{border-color:var(--purple);background:var(--purple-dim);}
-.big-opt.sel-rosa{border-color:var(--rosa);background:var(--rosa-dim);}
 .opt-icon{font-size:28px;margin-bottom:8px;}
-.opt-label{font-size:14px;font-weight:700;color:var(--text);}
+.opt-label{font-size:14px;font-weight:700;}
 .opt-sub{font-size:11px;color:var(--text3);margin-top:3px;}
 
-/* CANTIDAD */
 .cantidad-box{background:var(--amber-dim);border:1.5px solid rgba(200,120,32,0.3);border-radius:12px;padding:16px;margin-top:12px;display:none;}
 .cantidad-box.show{display:block;}
-.kg-compare{background:var(--cream2);border-radius:10px;padding:12px;display:none;align-items:center;gap:12px;margin-top:10px;}
-.kg-compare.show{display:flex;}
+.kg-compare{background:var(--cream2);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-top:10px;}
 .kg-box{flex:1;text-align:center;}
 .kg-val{font-size:18px;font-weight:700;}
 .kg-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px;}
-.kg-diff{text-align:center;margin-top:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:500;display:none;}
-.kg-diff.show{display:block;}
-.kg-diff.warn{background:var(--amber-dim);color:var(--amber);}
 
-/* PAGO MULTI */
-.pago-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.pago-check-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
 .pago-check{background:var(--cream);border:2px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;position:relative;}
 .pago-check:active{transform:scale(0.97);}
-.pago-check.activo{border-color:var(--rosa);background:var(--rosa-dim);}
 .pago-check.activo.green{border-color:var(--green);background:var(--green-dim);}
 .pago-check.activo.blue{border-color:var(--blue);background:var(--blue-dim);}
 .pago-check.activo.gray{border-color:var(--gray);background:var(--gray-dim);}
 .check-mark{position:absolute;top:6px;right:8px;font-size:14px;display:none;}
 .pago-check.activo .check-mark{display:block;}
-.pago-check-icon{font-size:24px;margin-bottom:6px;}
-.pago-check-label{font-size:13px;font-weight:600;}
+.pago-check-icon{font-size:22px;margin-bottom:5px;}
+.pago-check-label{font-size:12px;font-weight:600;}
 
-/* DETALLE PAGO */
-.pago-detalle{margin-top:12px;display:none;animation:fadeIn 0.2s ease;}
+.pago-detalle{margin-top:10px;display:none;}
 .pago-detalle.show{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+.divider{height:1px;background:var(--border);margin:12px 0;}
 .monto-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .monto-lbl{font-size:13px;color:var(--text2);width:110px;flex-shrink:0;}
-.monto-input{flex:1;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:17px;font-weight:600;font-family:inherit;outline:none;-webkit-appearance:none;text-align:right;}
+.monto-input{flex:1;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:16px;font-weight:600;font-family:inherit;outline:none;-webkit-appearance:none;text-align:right;}
 .resumen-pago{background:var(--rosa-dim);border:1px solid rgba(232,69,110,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;}
-.resumen-lbl{font-size:13px;color:var(--rosa);}
-.resumen-val{font-size:18px;font-weight:700;color:var(--rosa);}
 
-/* DIVIDER */
-.divider{height:1px;background:var(--border);margin:14px 0;}
-
-/* FOTO */
 .foto-mini{background:var(--cream);border:2px dashed rgba(72,120,200,0.4);border-radius:12px;padding:16px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;}
+.foto-mini.green-border{border-color:rgba(74,158,106,0.4);}
 .foto-mini.has-photo{padding:0;border-style:solid;border-color:var(--blue);}
+.foto-mini.green-border.has-photo{border-color:var(--green);}
 .foto-mini input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .foto-mini img{width:100%;max-height:140px;object-fit:cover;border-radius:10px;display:none;}
 .foto-mini.has-photo img{display:block;}
 .foto-mini.has-photo .fp{display:none;}
-.foto-mini.green-border.has-photo{border-color:var(--green);}
 .fp-icon{font-size:22px;margin-bottom:4px;}
 .fp-txt{font-size:13px;font-weight:500;}
 .fp-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+
 .photo-zone{background:var(--cream);border:2px dashed rgba(232,69,110,0.35);border-radius:14px;padding:26px 20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
 .photo-zone.has-photo{padding:0;border-style:solid;border-color:var(--rosa);}
 .photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
@@ -119,22 +151,18 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 .pp-txt{font-size:15px;font-weight:600;color:var(--rosa);}
 .pp-sub{font-size:13px;color:var(--text3);margin-top:4px;}
 
-/* DEV */
 .dev-box{background:var(--red-dim);border:1.5px solid rgba(212,64,80,0.3);border-radius:12px;padding:14px;margin-bottom:14px;}
 .dev-title{font-size:12px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
 .dev-desc{font-size:13px;color:var(--text2);line-height:1.5;}
 
-/* BTN */
 .btn-confirm{width:100%;background:var(--rosa);color:#fff;border:none;border-radius:14px;padding:18px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-top:4px;-webkit-appearance:none;}
 .btn-confirm:active{transform:scale(0.98);background:var(--rosa-dark);}
 .btn-confirm.red{background:var(--red);}
 
-/* SUCCESS */
 .success-screen{display:none;text-align:center;padding:48px 20px;}
 .success-screen.show{display:block;}
 .s-icon{font-size:68px;margin-bottom:14px;}
 .s-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:600;margin-bottom:8px;}
-.s-sub{font-size:14px;color:var(--text2);line-height:1.6;}
 .s-box{border-radius:14px;padding:18px;margin:20px 0;}
 .s-box.green{background:var(--green-dim);border:1px solid rgba(74,158,106,0.3);}
 .s-box.red{background:var(--red-dim);border:1px solid rgba(212,64,80,0.3);}
@@ -152,477 +180,488 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div class="spinner"></div><div class="loading-logo">LOMAROSA</div><div class="loading-txt" id="loading-txt">Procesando...</div></div>
+<div class="loading" id="loading"><div class="spinner"></div><div class="loading-logo">LOMAROSA</div><div class="loading-txt" id="loading-txt">Cargando...</div></div>
 <div class="toast" id="toast"></div>
 
 <header class="header">
   <div class="header-logo">Lomarosa</div>
-  <div class="header-sub">Registro de entregas</div>
+  <div class="header-sub" id="header-sub">Registro de entregas</div>
 </header>
 
 <div class="content">
-  <div class="steps">
-    <div class="step active" id="st1"></div>
-    <div class="step" id="st2"></div>
-    <div class="step" id="st3"></div>
-    <div class="step" id="st4"></div>
+
+  <!-- PANTALLA 1: SELECCIONAR CONDUCTOR -->
+  <div class="screen active" id="screen-conductores">
+    <div style="height:16px"></div>
+    <div class="conductor-titulo">Buenos dias</div>
+    <div class="conductor-sub">Selecciona tu nombre para ver tus facturas del dia</div>
+    <div class="conductores-grid" id="conductores-grid"></div>
+    <button class="btn-continuar" id="btn-continuar" disabled onclick="irAFacturas()">Ver mis facturas</button>
   </div>
 
-  <div id="form-view">
-
-    <!-- PASO 1: FACTURA -->
-    <div class="card">
-      <div class="sec-title">Paso 1 &#8212; Factura</div>
-      <div class="label">N&#250;mero de factura</div>
-      <input class="input" id="f-consec" type="text" inputmode="numeric"
-        placeholder="0000-0000000" autocomplete="off"
-        oninput="onConsecInput(this)" onkeydown="onConsecKey(event,this)">
-      <div class="factura-info" id="factura-info">
-        <div class="fi-cliente" id="fi-cliente"></div>
-        <div class="fi-meta" id="fi-meta"></div>
+  <!-- PANTALLA 2: FACTURAS DEL CONDUCTOR -->
+  <div class="screen" id="screen-facturas">
+    <button class="back-btn" onclick="volverConductores()"><span>&#8592;</span> Cambiar conductor</button>
+    <div class="conductor-header">
+      <div class="conductor-avatar-lg" id="av-lg"></div>
+      <div>
+        <div class="conductor-info-nombre" id="conductor-nombre-header"></div>
+        <div class="conductor-info-sub" id="conductor-fecha-header"></div>
       </div>
     </div>
-
-    <!-- PASO 2: ¿COMO FUE LA ENTREGA? -->
-    <div class="card" id="card-entrega" style="display:none">
-      <div class="sec-title">Paso 2 &#8212; &#191;C&#243;mo fue la entrega?</div>
-      <div class="opts-grid">
-        <div class="big-opt" id="opt-total" onclick="selEntrega('total')">
-          <div class="opt-icon">&#9989;</div>
-          <div class="opt-label" style="color:var(--green)">Recibi&#243;</div>
-          <div class="opt-sub">Total o parcial</div>
-        </div>
-        <div class="big-opt" id="opt-devolucion" onclick="selEntrega('devolucion')">
-          <div class="opt-icon">&#8617;&#65039;</div>
-          <div class="opt-label" style="color:var(--red)">Devoluci&#243;n</div>
-          <div class="opt-sub">Regres&#243; todo</div>
-        </div>
-      </div>
-
-      <!-- Cantidad siempre visible si recibió -->
-      <div class="cantidad-box" id="cantidad-box">
-        <div class="label" style="margin-bottom:8px">Cantidad recibida <span style="font-size:11px;color:var(--text3)">(cambia si fue parcial)</span></div>
-        <input class="input" id="f-kg" type="text" inputmode="decimal" placeholder="0.0" oninput="calcDiff()">
-        <div class="kg-compare" id="kg-compare">
-          <div class="kg-box"><div class="kg-val" id="kc-fac" style="color:var(--text3)">-</div><div class="kg-lbl">Facturado</div></div>
-          <div style="font-size:18px;color:var(--text3)">&#8594;</div>
-          <div class="kg-box"><div class="kg-val" id="kc-rec" style="color:var(--amber)">-</div><div class="kg-lbl">Recibido</div></div>
-        </div>
-        <div class="kg-diff" id="kg-diff"></div>
-      </div>
+    <div class="stats-row">
+      <div class="stat-mini rosa"><div class="stat-mini-val" id="st-total">0</div><div class="stat-mini-lbl">Total</div></div>
+      <div class="stat-mini green"><div class="stat-mini-val" id="st-entregadas">0</div><div class="stat-mini-lbl">Listas</div></div>
+      <div class="stat-mini amber"><div class="stat-mini-val" id="st-pendientes">0</div><div class="stat-mini-lbl">Faltan</div></div>
     </div>
-
-    <!-- DEVOLUCION -->
-    <div id="sec-dev" style="display:none">
-      <div class="dev-box"><div class="dev-title">&#9888; Devoluci&#243;n total</div><div class="dev-desc">Se generar&#225; una novedad de anulaci&#243;n autom&#225;ticamente.</div></div>
-      <div class="card">
-        <div class="sec-title">Foto de la factura devuelta <span style="color:var(--red)">*</span></div>
-        <div class="photo-zone" id="photo-dev-zone">
-          <input type="file" id="photo-dev-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-dev-preview','photo-dev-zone')">
-          <div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt" style="color:var(--red)">Foto de la factura devuelta</div><div class="pp-sub">Obligatorio</div></div>
-          <img id="photo-dev-preview">
-        </div>
-      </div>
-      <button class="btn-confirm red" onclick="confirmarDevolucion()">&#8617; Confirmar devoluci&#243;n</button>
+    <div id="facturas-pendientes-sec">
+      <div class="section-label">Por entregar</div>
+      <div id="facturas-pendientes-list"></div>
     </div>
-
-    <!-- PAGO + FOTOS (entrega normal/parcial) -->
-    <div id="sec-normal" style="display:none">
-
-      <!-- PAGO: seleccion multiple -->
-      <div class="card">
-        <div class="sec-title">Paso 3 &#8212; &#191;C&#243;mo pag&#243;? (puede seleccionar varios)</div>
-        <div class="pago-check-grid" style="grid-template-columns:1fr 1fr 1fr;">
-          <div class="pago-check green" id="pcheck-efectivo" onclick="togglePago('efectivo')">
-            <span class="check-mark">&#10003;</span>
-            <div class="pago-check-icon">&#128181;</div>
-            <div class="pago-check-label">Efectivo</div>
-          </div>
-          <div class="pago-check blue" id="pcheck-transferencia" onclick="togglePago('transferencia')">
-            <span class="check-mark">&#10003;</span>
-            <div class="pago-check-icon">&#128247;</div>
-            <div class="pago-check-label">Transferencia</div>
-          </div>
-          <div class="pago-check gray" id="pcheck-cartera" onclick="togglePago('cartera')">
-            <span class="check-mark">&#10003;</span>
-            <div class="pago-check-icon">&#128203;</div>
-            <div class="pago-check-label">Cartera</div>
-          </div>
-        </div>
-
-        <!-- Detalle efectivo -->
-        <div class="pago-detalle" id="detalle-efectivo">
-          <div class="divider"></div>
-          <div class="monto-row">
-            <span class="monto-lbl">&#128181; Monto</span>
-            <input class="monto-input" id="monto-efectivo" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()">
-          </div>
-          <div class="label" style="margin-bottom:8px">Foto del efectivo recibido <span style="color:var(--red)">*</span></div>
-          <div class="foto-mini green-border" id="foto-efectivo-zone">
-            <input type="file" id="foto-efectivo-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-efectivo-preview','foto-efectivo-zone')">
-            <div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--green)">Foto del dinero</div><div class="fp-sub">Obligatorio</div></div>
-            <img id="foto-efectivo-preview">
-          </div>
-        </div>
-
-        <!-- Detalle transferencia -->
-        <div class="pago-detalle" id="detalle-transferencia">
-          <div class="divider"></div>
-          <div class="monto-row">
-            <span class="monto-lbl">&#8594; Monto</span>
-            <input class="monto-input" id="monto-transferencia" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()">
-          </div>
-          <div class="label" style="margin-bottom:8px">Foto del comprobante <span style="color:var(--red)">*</span></div>
-          <div class="foto-mini" id="foto-transf-zone">
-            <input type="file" id="foto-transf-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-transf-preview','foto-transf-zone')">
-            <div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--blue)">Foto del comprobante</div><div class="fp-sub">Obligatorio</div></div>
-            <img id="foto-transf-preview">
-          </div>
-        </div>
-
-        <!-- Detalle cartera -->
-        <div class="pago-detalle" id="detalle-cartera">
-          <div class="divider"></div>
-          <div class="monto-row">
-            <span class="monto-lbl">&#128203; Monto</span>
-            <input class="monto-input" id="monto-cartera" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()">
-          </div>
-        </div>
-
-        <!-- Resumen total -->
-        <div class="resumen-pago" id="resumen-pago" style="display:none">
-          <span class="resumen-lbl">Total registrado</span>
-          <span class="resumen-val" id="resumen-val">$0</span>
-        </div>
-      </div>
-
-      <!-- FOTO FACTURA -->
-      <div class="card">
-        <div class="sec-title">Foto de la factura firmada <span style="color:var(--rosa)">*</span></div>
-        <div class="photo-zone" id="photo-zone">
-          <input type="file" id="photo-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-preview','photo-zone')">
-          <div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt">Tomar foto a la factura firmada</div><div class="pp-sub">Obligatorio</div></div>
-          <img id="photo-preview">
-        </div>
-      </div>
-
-      <!-- OBS -->
-      <div class="card">
-        <div class="sec-title">Observaciones (opcional)</div>
-        <input class="input normal" id="f-obs" type="text" placeholder="Ej: cliente anot&#243; algo...">
-      </div>
-
-      <button class="btn-confirm" onclick="confirmarEntrega()">&#10003; Confirmar entrega</button>
+    <div id="facturas-listas-sec" style="margin-top:16px">
+      <div class="section-label">Ya registradas hoy</div>
+      <div id="facturas-listas-list"></div>
     </div>
-
   </div>
 
-  <!-- SUCCESS -->
-  <div class="success-screen" id="success-view">
-    <div class="s-icon" id="s-icon">&#9989;</div>
-    <div class="s-title" id="s-title" style="color:var(--green)">&#161;Entrega registrada!</div>
-    <div class="s-sub" id="s-sub">La informaci&#243;n qued&#243; guardada en el sistema.</div>
-    <div class="s-box green" id="s-box">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;color:var(--text3)">Factura</div>
-      <div class="s-num" id="s-num" style="color:var(--green)">#-</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:6px" id="s-cliente"></div>
+  <!-- PANTALLA 3: FORMULARIO ENTREGA -->
+  <div class="screen" id="screen-form">
+    <button class="back-btn" onclick="volverFacturas()"><span>&#8592;</span> Mis facturas</button>
+
+    <div id="form-view">
+      <div class="card" style="margin-bottom:14px;background:var(--rosa-dim);border-color:rgba(232,69,110,0.25);">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rosa);margin-bottom:4px;font-weight:600">Factura</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600" id="form-consec"></div>
+        <div style="font-size:14px;color:var(--text);margin-top:4px;font-weight:500" id="form-cliente"></div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px" id="form-sucursal" style="display:none"></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px" id="form-kg-fac"></div>
+      </div>
+
+      <!-- TIPO ENTREGA -->
+      <div class="card">
+        <div class="sec-title">Como fue la entrega?</div>
+        <div class="opts-grid">
+          <div class="big-opt" id="opt-recibio" onclick="selEntrega('recibio')">
+            <div class="opt-icon">&#9989;</div>
+            <div class="opt-label" style="color:var(--green)">Recibi&#243;</div>
+            <div class="opt-sub">Total o parcial</div>
+          </div>
+          <div class="big-opt" id="opt-devolucion" onclick="selEntrega('devolucion')">
+            <div class="opt-icon">&#8617;&#65039;</div>
+            <div class="opt-label" style="color:var(--red)">Devoluci&#243;n</div>
+            <div class="opt-sub">Regres&#243; todo</div>
+          </div>
+        </div>
+        <div class="cantidad-box" id="cantidad-box">
+          <div class="label">Cantidad recibida</div>
+          <input class="input" id="f-kg" type="text" inputmode="decimal" placeholder="0.0" oninput="calcDiff()">
+          <div class="kg-compare" id="kg-compare" style="display:none">
+            <div class="kg-box"><div class="kg-val" id="kc-fac" style="color:var(--text3)">-</div><div class="kg-lbl">Facturado</div></div>
+            <div style="font-size:18px;color:var(--text3)">&#8594;</div>
+            <div class="kg-box"><div class="kg-val" id="kc-rec" style="color:var(--amber)">-</div><div class="kg-lbl">Recibido</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEVOLUCION -->
+      <div id="sec-dev" style="display:none">
+        <div class="dev-box"><div class="dev-title">Devolucion total</div><div class="dev-desc">Se generara novedad de anulacion automaticamente.</div></div>
+        <div class="card">
+          <div class="sec-title">Foto de la factura devuelta <span style="color:var(--red)">*</span></div>
+          <div class="photo-zone" id="photo-dev-zone">
+            <input type="file" id="photo-dev-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-dev-preview','photo-dev-zone')">
+            <div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt" style="color:var(--red)">Foto de la factura devuelta</div><div class="pp-sub">Obligatorio</div></div>
+            <img id="photo-dev-preview">
+          </div>
+        </div>
+        <button class="btn-confirm red" onclick="confirmarDevolucion()">Confirmar devolucion</button>
+      </div>
+
+      <!-- ENTREGA NORMAL -->
+      <div id="sec-normal" style="display:none">
+        <div class="card">
+          <div class="sec-title">Metodo de pago</div>
+          <div class="pago-check-grid">
+            <div class="pago-check green" id="pcheck-efectivo" onclick="togglePago('efectivo')"><span class="check-mark">&#10003;</span><div class="pago-check-icon">&#128181;</div><div class="pago-check-label">Efectivo</div></div>
+            <div class="pago-check blue" id="pcheck-transferencia" onclick="togglePago('transferencia')"><span class="check-mark">&#10003;</span><div class="pago-check-icon">&#128247;</div><div class="pago-check-label">Transferencia</div></div>
+            <div class="pago-check gray" id="pcheck-cartera" onclick="togglePago('cartera')"><span class="check-mark">&#10003;</span><div class="pago-check-icon">&#128203;</div><div class="pago-check-label">Cartera</div></div>
+          </div>
+          <div class="pago-detalle" id="detalle-efectivo">
+            <div class="divider"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+            <div class="label" style="margin-bottom:8px">Foto del dinero <span style="color:var(--red)">*</span></div>
+            <div class="foto-mini green-border" id="foto-ef-zone"><input type="file" id="foto-ef-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-ef-preview','foto-ef-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--green)">Foto del dinero</div><div class="fp-sub">Obligatorio</div></div><img id="foto-ef-preview"></div>
+          </div>
+          <div class="pago-detalle" id="detalle-transferencia">
+            <div class="divider"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+            <div class="label" style="margin-bottom:8px">Foto del comprobante <span style="color:var(--red)">*</span></div>
+            <div class="foto-mini" id="foto-tr-zone"><input type="file" id="foto-tr-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-tr-preview','foto-tr-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--blue)">Foto del comprobante</div><div class="fp-sub">Obligatorio</div></div><img id="foto-tr-preview"></div>
+          </div>
+          <div class="pago-detalle" id="detalle-cartera">
+            <div class="divider"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+          </div>
+          <div class="resumen-pago" id="resumen-pago" style="display:none"><span style="font-size:13px;color:var(--rosa)">Total</span><span style="font-size:18px;font-weight:700;color:var(--rosa)" id="resumen-val">$0</span></div>
+        </div>
+        <div class="card">
+          <div class="sec-title">Foto de la factura firmada <span style="color:var(--rosa)">*</span></div>
+          <div class="photo-zone" id="photo-zone"><input type="file" id="photo-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-preview','photo-zone')"><div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt">Tomar foto a la factura firmada</div><div class="pp-sub">Obligatorio</div></div><img id="photo-preview"></div>
+        </div>
+        <div class="card">
+          <div class="sec-title">Observaciones (opcional)</div>
+          <input class="input" id="f-obs" type="text" placeholder="Algun comentario...">
+        </div>
+        <button class="btn-confirm" onclick="confirmarEntrega()">Confirmar entrega</button>
+      </div>
     </div>
-    <button class="btn-nueva" onclick="resetForm()">+ Registrar otra entrega</button>
+
+    <div class="success-screen" id="success-view">
+      <div class="s-icon" id="s-icon">&#9989;</div>
+      <div class="s-title" id="s-title" style="color:var(--green)">Entrega registrada!</div>
+      <div class="s-box green" id="s-box">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;color:var(--text3)">Factura</div>
+        <div class="s-num" id="s-num" style="color:var(--green)">#-</div>
+      </div>
+      <button class="btn-nueva" onclick="volverFacturas()">Volver a mis facturas</button>
+    </div>
   </div>
+
 </div>
 
 <script>
-const SUPABASE_URL='https://pqcgibsdewrrbukibubd.supabase.co';
-const SUPABASE_KEY='sb_publishable_M2_2LzTgPvj2s38Lq64Bzg_qrnJ-e1q';
-const H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
-async function sbGet(t,p){const r=await fetch(SUPABASE_URL+'/rest/v1/'+t+'?'+p,{headers:H});return r.ok?await r.json():null;}
-async function sbPost(t,b){const r=await fetch(SUPABASE_URL+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(b)});const tx=await r.text();try{return{data:JSON.parse(tx),error:r.ok?null:tx};}catch(e){return{data:null,error:tx};}}
-async function sbPatch(t,f,b){await fetch(SUPABASE_URL+'/rest/v1/'+t+'?'+f,{method:'PATCH',headers:H,body:JSON.stringify(b)});}
-async function sbUpload(path,file,type){
-  const ct=type||file.type||'image/jpeg';
-  const h={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':ct};
-  const r=await fetch(SUPABASE_URL+'/storage/v1/object/facturas-fotos/'+path,{method:'POST',headers:h,body:file});
-  return r.ok?SUPABASE_URL+'/storage/v1/object/public/facturas-fotos/'+path:null;
+var SUPA_URL='https://pqcgibsdewrrbukibubd.supabase.co';
+var SUPA_KEY='sb_publishable_M2_2LzTgPvj2s38Lq64Bzg_qrnJ-e1q';
+var H={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'};
+function sbGet(t,p){return fetch(SUPA_URL+'/rest/v1/'+t+'?'+p,{headers:H}).then(function(r){return r.ok?r.json():[];});}
+function sbPost(t,b){return fetch(SUPA_URL+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(b)}).then(function(r){return r.text().then(function(tx){try{return{data:JSON.parse(tx),error:r.ok?null:tx};}catch(e){return{data:null,error:tx};}});});}
+function sbPatch(t,f,b){return fetch(SUPA_URL+'/rest/v1/'+t+'?'+f,{method:'PATCH',headers:H,body:JSON.stringify(b)});}
+function sbUpload(path,file){var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':file.type};return fetch(SUPA_URL+'/storage/v1/object/facturas-fotos/'+path,{method:'POST',headers:h,body:file}).then(function(r){return r.ok?SUPA_URL+'/storage/v1/object/public/facturas-fotos/'+path:null;});}
+
+var conductorSel=null, facturaSel=null, pagosActivos=new Set(), tipoEntrega=null;
+var todosRepartidores=[], todasFacturas=[], todasEntregas=[];
+var hoy=new Date().toISOString().split('T')[0];
+
+// Cargar datos al inicio
+window.addEventListener('load',function(){
+  showLoading('Cargando conductores...');
+  Promise.all([
+    sbGet('repartidores','select=id,nombre&order=nombre'),
+    sbGet('facturas','select=id,consecutivo,fecha,estado,kg_facturados,repartidor_id,sucursal,clientes(nombre)&fecha=eq.'+new Date().toISOString().split('T')[0]+'&order=consecutivo&limit=2000'),
+    sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,registrado_en&limit=5000')
+  ]).then(function(results){
+    todosRepartidores=(results[0]||[]).filter(function(r){
+      // Solo mostrar repartidores que tienen facturas hoy
+      var tieneFaturasHoy=(results[1]||[]).some(function(f){return f.repartidor_id===r.id;});
+      return tieneFaturasHoy && r.nombre && r.nombre.indexOf('PDV')<0 && r.nombre!=='PUNTO DE VENTA';
+    });
+    todasFacturas=results[1]||[];
+    todasEntregas=results[2]||[];
+    hideLoading();
+    renderConductores();
+  }).catch(function(e){hideLoading();showToast('Error de conexion');console.error(e);});
+});
+
+function getIniciales(nombre){
+  var parts=nombre.trim().split(' ');
+  if(parts.length>=2) return (parts[0][0]+(parts[1][0])).toUpperCase();
+  return nombre.substring(0,2).toUpperCase();
 }
 
-let facturaData=null, tipoEntrega=null, pagosActivos=new Set(), buscarTimer=null;
+function getColor(idx){
+  var colors=['#e8456e','#4878c8','#4a9e6a','#c87820','#7c4daa','#e85d04','#2d6a4f','#c1121f'];
+  return colors[idx%colors.length];
+}
 
-// FORMATO CONSECUTIVO
-function formatConsec(raw){const d=raw.replace(/[^0-9]/g,'');if(!d)return '';if(d.length<=4)return d;return d.slice(0,4)+'-'+d.slice(4);}
-function onConsecKey(e,el){
-  const pos=el.selectionStart,val=el.value,dash=val.indexOf('-');
-  if(e.key==='Backspace'&&dash>=0&&pos===dash+1){e.preventDefault();const d=val.replace(/[^0-9]/g,'');const nd=d.slice(0,3)+d.slice(4);el.value=formatConsec(nd);el.setSelectionRange(3,3);triggerBuscar(el.value);return;}
-  if(e.key==='Delete'&&dash>=0&&pos===dash){e.preventDefault();return;}
+function renderConductores(){
+  var grid=document.getElementById('conductores-grid');
+  var entregaMap={};
+  todasEntregas.forEach(function(e){entregaMap[e.factura_id]=e;});
+  
+  var html='';
+  todosRepartidores.forEach(function(rep,idx){
+    var misFacturas=todasFacturas.filter(function(f){return f.repartidor_id===rep.id;});
+    var hoyFacturas=misFacturas.filter(function(f){return f.fecha===hoy;});
+    var pendientes=hoyFacturas.filter(function(f){return !entregaMap[f.id];}).length;
+    var entregadas=hoyFacturas.filter(function(f){return !!entregaMap[f.id];}).length;
+    var color=getColor(idx);
+    var color=getColor(idx);
+    var iniciales=getIniciales(rep.nombre);
+    var safeNombre=rep.nombre.replace(/'/g,'&#39;');
+    html+='<div class="conductor-card" id="card-'+idx+'" data-id="'+rep.id+'" data-nombre="'+safeNombre+'" data-idx="'+idx+'" onclick="selConductorByEl(this)">';
+    html+='<div class="conductor-nombre">'+rep.nombre+'</div>';
+    if(hoyFacturas.length>0){
+      html+='<div class="conductor-count pending">'+pendientes+' pendientes</div>';
+    } else {
+      html+='<div class="conductor-count">Sin facturas hoy</div>';
+    }
+    html+='</div>';
+  });
+  grid.innerHTML=html;
 }
-function onConsecInput(el){
-  const oldPos=el.selectionStart,raw=el.value,hadDash=raw.includes('-');
-  const digits=raw.replace(/[^0-9]/g,'');
-  const newVal=formatConsec(digits);
-  el.value=newVal;
-  let np=oldPos;
-  if(!hadDash&&newVal.includes('-')&&oldPos>=4)np=oldPos+1;
-  el.setSelectionRange(np,np);
-  triggerBuscar(newVal);
+
+function selConductorByEl(el){
+  var id=el.getAttribute('data-id');
+  var nombre=el.getAttribute('data-nombre').replace(/&#39;/g,"'");
+  var idx=parseInt(el.getAttribute('data-idx'));
+  conductorSel={id:id,nombre:nombre,idx:idx};
+  document.querySelectorAll('.conductor-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  document.getElementById('btn-continuar').disabled=false;
 }
-function triggerBuscar(consec){
-  clearTimeout(buscarTimer);
-  document.getElementById('factura-info').classList.remove('show');
-  document.getElementById('card-entrega').style.display='none';
-  document.getElementById('sec-dev').style.display='none';
-  document.getElementById('sec-normal').style.display='none';
-  facturaData=null;tipoEntrega=null;
-  if(consec.length<8)return;
-  buscarTimer=setTimeout(()=>buscarFactura(consec),700);
+
+function selConductor(id,nombre,idx){
+  conductorSel={id:id,nombre:nombre,idx:idx};
+  document.querySelectorAll('.conductor-card').forEach(function(c){c.classList.remove('selected');});
+  document.getElementById('card-'+id).classList.add('selected');
+  document.getElementById('btn-continuar').disabled=false;
 }
-async function buscarFactura(consec){
-  const data=await sbGet('facturas','select=id,consecutivo,kg_facturados,precio_unitario,clientes(nombre),repartidores(nombre)&consecutivo=eq.'+encodeURIComponent(consec));
-  if(data&&data.length>0){
-    facturaData=data[0];
-    document.getElementById('fi-cliente').textContent=facturaData.clientes?.nombre||'Cliente';
-    document.getElementById('fi-meta').textContent='Repartidor: '+(facturaData.repartidores?.nombre||'-')+'  |  '+facturaData.kg_facturados+' facturado';
-    document.getElementById('factura-info').classList.add('show');
-    document.getElementById('kc-fac').textContent=facturaData.kg_facturados;
-    document.getElementById('card-entrega').style.display='block';
-    setStep(2);
-    setTimeout(()=>document.getElementById('card-entrega').scrollIntoView({behavior:'smooth'}),100);
+
+function irAFacturas(){
+  if(!conductorSel)return;
+  mostrarPantalla('screen-facturas');
+  document.getElementById('header-sub').textContent=conductorSel.nombre;
+  var av=document.getElementById('av-lg');
+  av.textContent=getIniciales(conductorSel.nombre);
+  av.style.background=getColor(conductorSel.idx);
+  document.getElementById('conductor-nombre-header').textContent=conductorSel.nombre;
+  document.getElementById('conductor-fecha-header').textContent='Facturas del '+hoy;
+  renderFacturasDelDia();
+}
+
+function renderFacturasDelDia(){
+  var entregaMap={};
+  todasEntregas.forEach(function(e){entregaMap[e.factura_id]=e;});
+  var misFacturas=todasFacturas.filter(function(f){return f.repartidor_id===conductorSel.id&&f.fecha===hoy;});
+  var pendientes=misFacturas.filter(function(f){return !entregaMap[f.id];});
+  var listas=misFacturas.filter(function(f){return !!entregaMap[f.id];});
+  
+  document.getElementById('st-total').textContent=misFacturas.length;
+  document.getElementById('st-entregadas').textContent=listas.length;
+  document.getElementById('st-pendientes').textContent=pendientes.length;
+
+  // Pendientes
+  var pList=document.getElementById('facturas-pendientes-list');
+  if(pendientes.length){
+    var html='';
+    pendientes.forEach(function(f){
+      html+='<div class="factura-item pendiente" data-fid="'+f.id+'" onclick="abrirFacturaByEl(this)">';
+      html+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge pendiente">Pendiente</span></div>';
+      html+='<div class="fi-cliente">'+(f.clientes&&f.clientes.nombre?f.clientes.nombre:'-')+'</div>';
+      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) html+='<div class="fi-meta" style="color:var(--text2)">'+f.sucursal+'</div>';
+      html+='<div class="fi-meta">'+f.kg_facturados+' uds facturadas</div>';
+      html+='</div>';
+    });
+    pList.innerHTML=html;
   } else {
-    showToast('Factura no encontrada en el sistema');
+    pList.innerHTML='<div class="empty-state"><div class="empty-icon">&#127881;</div><p>Todas entregadas!</p></div>';
+  }
+
+  // Listas
+  var lList=document.getElementById('facturas-listas-list');
+  if(listas.length){
+    var html2='';
+    listas.forEach(function(f){
+      var e=entregaMap[f.id];
+      var badge=f.estado==='con_novedad'?'novedad':(f.estado==='devuelta'?'devuelta':'entregada');
+      var badgeTxt=f.estado==='con_novedad'?'Con novedad':(f.estado==='devuelta'?'Devuelta':'Entregada');
+      html2+='<div class="factura-item '+badge+'">';
+      html2+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge '+badge+'">'+badgeTxt+'</span></div>';
+      html2+='<div class="fi-cliente">'+(f.clientes&&f.clientes.nombre?f.clientes.nombre:'-')+'</div>';
+      html2+='<div class="fi-meta">'+(e&&e.metodo_pago?e.metodo_pago:'')+(e&&e.registrado_en?' · '+new Date(e.registrado_en).toTimeString().slice(0,5):'')+'</div>';
+      html2+='</div>';
+    });
+    lList.innerHTML=html2;
+  } else {
+    lList.innerHTML='<div style="font-size:13px;color:var(--text3);text-align:center;padding:10px">Ninguna registrada aun</div>';
   }
 }
 
-// TIPO DE ENTREGA
+function abrirFacturaByEl(el){
+  var id=el.getAttribute('data-fid');
+  abrirFactura(id);
+}
+
+function abrirFactura(facturaId){
+  facturaSel=todasFacturas.find(function(f){return f.id===facturaId;});
+  if(!facturaSel)return;
+  mostrarPantalla('screen-form');
+  document.getElementById('form-consec').textContent='#'+facturaSel.consecutivo;
+  document.getElementById('form-cliente').textContent=(facturaSel.clientes&&facturaSel.clientes.nombre?facturaSel.clientes.nombre:'-');
+  var sucursalEl=document.getElementById('form-sucursal');
+  if(sucursalEl){
+    if(facturaSel.sucursal&&facturaSel.sucursal!==facturaSel.clientes?.nombre){
+      sucursalEl.textContent=facturaSel.sucursal;
+      sucursalEl.style.display='block';
+    } else {
+      sucursalEl.style.display='none';
+    }
+  }
+  document.getElementById('form-kg-fac').textContent=facturaSel.kg_facturados+' unidades facturadas';
+  document.getElementById('kc-fac').textContent=facturaSel.kg_facturados;
+  resetFormFields();
+}
+
 function selEntrega(tipo){
   tipoEntrega=tipo;
-  ['total','devolucion'].forEach(t=>document.getElementById('opt-'+t).className='big-opt');
-  document.getElementById('opt-'+tipo).classList.add(tipo==='total'?'sel-green':'sel-red');
-
-  document.getElementById('cantidad-box').classList.remove('show');
-  document.getElementById('sec-dev').style.display='none';
-  document.getElementById('sec-normal').style.display='none';
-
-  if(tipo==='devolucion'){
-    document.getElementById('sec-dev').style.display='block';
-    setStep(3);
-  } else {
-    document.getElementById('kc-fac').textContent=facturaData.kg_facturados;
-    document.getElementById('kg-compare').classList.add('show');
-    document.getElementById('cantidad-box').classList.add('show');
-    document.getElementById('sec-normal').style.display='block';
-    setStep(3);
-  }
-  setTimeout(()=>document.getElementById(tipo==='devolucion'?'sec-dev':'sec-normal').scrollIntoView({behavior:'smooth'}),100);
+  document.getElementById('opt-recibio').className='big-opt'+(tipo==='recibio'?' sel-green':'');
+  document.getElementById('opt-devolucion').className='big-opt'+(tipo==='devolucion'?' sel-red':'');
+  document.getElementById('cantidad-box').className='cantidad-box'+(tipo==='recibio'?' show':'');
+  document.getElementById('sec-dev').style.display=tipo==='devolucion'?'block':'none';
+  document.getElementById('sec-normal').style.display=tipo==='recibio'?'block':'none';
 }
 
-// CANTIDAD PARCIAL
 function calcDiff(){
-  if(!facturaData)return;
-  const kg=parseFloat(document.getElementById('f-kg').value.replace(',','.'));
+  var kg=parseFloat(document.getElementById('f-kg').value.replace(',','.'));
   if(isNaN(kg))return;
   document.getElementById('kc-rec').textContent=kg;
-  document.getElementById('kg-compare').classList.add('show');
-  const diff=Math.round((kg-facturaData.kg_facturados)*10)/10;
-  const el=document.getElementById('kg-diff');
-  if(Math.abs(diff)>0.09){el.className='kg-diff show warn';el.textContent=(diff>0?'+':'')+diff+' — se generará novedad';}
-  else{el.className='kg-diff';el.style.display='none';}
+  document.getElementById('kg-compare').style.display='flex';
 }
 
-// PAGO MULTIPLE
 function togglePago(tipo){
-  const el=document.getElementById('pcheck-'+tipo);
-  const det=document.getElementById('detalle-'+tipo);
-  if(pagosActivos.has(tipo)){
-    pagosActivos.delete(tipo);
-    el.classList.remove('activo');
-    det.classList.remove('show');
-  } else {
-    pagosActivos.add(tipo);
-    el.classList.add('activo');
-    det.classList.add('show');
-  }
-  const res=document.getElementById('resumen-pago');
-  res.style.display=pagosActivos.size>1?'flex':'none';
+  var el=document.getElementById('pcheck-'+tipo);
+  var det=document.getElementById('detalle-'+tipo);
+  if(pagosActivos.has(tipo)){pagosActivos.delete(tipo);el.classList.remove('activo');det.classList.remove('show');}
+  else{pagosActivos.add(tipo);el.classList.add('activo');det.classList.add('show');}
+  document.getElementById('resumen-pago').style.display=pagosActivos.size>1?'flex':'none';
   calcResumen();
-  setStep(4);
 }
 
 function calcResumen(){
-  if(pagosActivos.size<=1){document.getElementById('resumen-pago').style.display='none';return;}
-  let total=0;
-  ['efectivo','transferencia','cartera'].forEach(t=>{
-    if(pagosActivos.has(t)){
-      const v=parseFloat(document.getElementById('monto-'+t).value.replace(',','.'))||0;
-      total+=v;
-    }
-  });
+  var total=0;
+  ['efectivo','transferencia','cartera'].forEach(function(t){if(pagosActivos.has(t)){var v=parseFloat(document.getElementById('monto-'+t).value.replace(',','.'))||0;total+=v;}});
   document.getElementById('resumen-val').textContent='$'+Math.round(total).toLocaleString('es-CO');
-  document.getElementById('resumen-pago').style.display='flex';
 }
 
-// FOTOS
 function previewImg(input,imgId,zoneId){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{document.getElementById(imgId).src=e.target.result;document.getElementById(zoneId).classList.add('has-photo');};
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){document.getElementById(imgId).src=e.target.result;document.getElementById(zoneId).classList.add('has-photo');};
   reader.readAsDataURL(file);
 }
 
-// CONFIRMACION DEVOLUCION
-async function confirmarDevolucion(){
-  const fotoFile=document.getElementById('photo-dev-file').files[0];
+function confirmarDevolucion(){
+  var fotoFile=document.getElementById('photo-dev-file').files[0];
   if(!fotoFile){showToast('La foto de la factura devuelta es obligatoria');return;}
   showLoading('Subiendo foto...');
-  const ext=fotoFile.name.split('.').pop()||'jpg';
-  const foto_url=await sbUpload('dev_'+facturaData.consecutivo+'_'+Date.now()+'.'+ext,fotoFile);
-  showLoading('Registrando...');
-  const{data:entrega,error}=await sbPost('entregas',{
-    factura_id:facturaData.id,kg_recibidos:0,metodo_pago:'devolucion',
-    foto_url,observaciones:'DEVOLUCIÓN TOTAL'
-  });
-  if(error&&!error.includes('unique')){hideLoading();showToast('Error al registrar');return;}
-  if(entrega?.[0]){
-    await sbPost('novedades',{entrega_id:entrega[0].id,tipo:'anulacion',
-      valor_facturado:facturaData.kg_facturados,valor_real:0,
-      diferencia:-facturaData.kg_facturados,estado:'pendiente'});
-  }
-  await sbPatch('facturas','id=eq.'+facturaData.id,{estado:'devuelta'});
-  hideLoading();
-  mostrarSuccess(false);
+  var ext=fotoFile.name.split('.').pop()||'jpg';
+  sbUpload('dev_'+facturaSel.consecutivo+'_'+Date.now()+'.'+ext,fotoFile).then(function(foto_url){
+    showLoading('Registrando...');
+    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:'DEVOLUCION TOTAL'});
+  }).then(function(res){
+    if(res.error&&res.error.indexOf('unique')>=0){hideLoading();showToast('Esta factura ya fue registrada');return;}
+    return sbPost('novedades',{entrega_id:res.data[0].id,tipo:'anulacion',valor_facturado:facturaSel.kg_facturados,valor_real:0,diferencia:-facturaSel.kg_facturados,estado:'pendiente'})
+    .then(function(){return sbPatch('facturas','id=eq.'+facturaSel.id,{estado:'devuelta'});});
+  }).then(function(){
+    hideLoading();
+    mostrarSuccess(false);
+    recargarEntregas();
+  }).catch(function(e){hideLoading();showToast('Error al registrar');console.error(e);});
 }
 
-// CONFIRMACION ENTREGA
-async function confirmarEntrega(){
-  const fotoFactura=document.getElementById('photo-file').files[0];
-  const obs=document.getElementById('f-obs').value.trim();
-  if(!facturaData){showToast('No hay factura seleccionada');return;}
-  if(pagosActivos.size===0){showToast('Selecciona al menos un método de pago');return;}
+function confirmarEntrega(){
+  if(!facturaSel){showToast('No hay factura seleccionada');return;}
+  if(pagosActivos.size===0){showToast('Selecciona al menos un metodo de pago');return;}
+  if(pagosActivos.has('efectivo')&&!document.getElementById('foto-ef-file').files[0]){showToast('La foto del efectivo es obligatoria');return;}
+  if(pagosActivos.has('transferencia')&&!document.getElementById('foto-tr-file').files[0]){showToast('La foto del comprobante es obligatoria');return;}
+  var fotoFactura=document.getElementById('photo-file').files[0];
   if(!fotoFactura){showToast('La foto de la factura es obligatoria');return;}
+  var kg=facturaSel.kg_facturados;
+  var kgInput=document.getElementById('f-kg').value.trim();
+  if(kgInput){var kp=parseFloat(kgInput.replace(',','.'));if(!isNaN(kp)&&kp>0)kg=kp;}
+  var mEf=pagosActivos.has('efectivo')?parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0:null;
+  var mTr=pagosActivos.has('transferencia')?parseFloat(document.getElementById('monto-transferencia').value.replace(',','.'))||0:null;
+  var mCa=pagosActivos.has('cartera')?parseFloat(document.getElementById('monto-cartera').value.replace(',','.'))||0:null;
+  var metodoPago=pagosActivos.size===1?Array.from(pagosActivos)[0]:'parcial';
+  var obs=document.getElementById('f-obs').value.trim();
+  showLoading('Subiendo foto...');
+  var ext=fotoFactura.name.split('.').pop()||'jpg';
+  var ts=Date.now();
+  sbUpload('factura_'+facturaSel.consecutivo+'_'+ts+'.'+ext,fotoFactura).then(function(foto_url){
+    var pEf=Promise.resolve(null);
+    if(pagosActivos.has('efectivo')){var fe=document.getElementById('foto-ef-file').files[0];if(fe){showLoading('Subiendo foto efectivo...');pEf=sbUpload('ef_'+facturaSel.consecutivo+'_'+ts+'.'+fe.name.split('.').pop(),fe);}}
+    return pEf.then(function(fotoEfUrl){
+      var pTr=Promise.resolve(null);
+      if(pagosActivos.has('transferencia')){var ft=document.getElementById('foto-tr-file').files[0];if(ft){showLoading('Subiendo comprobante...');pTr=sbUpload('transf_'+facturaSel.consecutivo+'_'+ts+'.'+ft.name.split('.').pop(),ft);}}
+      return pTr.then(function(fotoTrUrl){
+        if(fotoEfUrl) obs=(obs?obs+' ':'')+' [FOTO_EF:'+fotoEfUrl+']';
+        showLoading('Registrando...');
+        return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:kg,metodo_pago:metodoPago,foto_url:foto_url,foto_comprobante_url:fotoTrUrl,monto_efectivo:mEf,monto_transferencia:mTr,observaciones:obs||null});
+      });
+    });
+  }).then(function(res){
+    if(res.error&&res.error.indexOf('unique')>=0){hideLoading();showToast('Esta factura ya fue registrada');return;}
+    if(res.error){hideLoading();showToast('Error al registrar');console.error(res.error);return;}
+    var diff=Math.round((kg-facturaSel.kg_facturados)*10)/10;
+    var estado=Math.abs(diff)>0.09?'con_novedad':(metodoPago==='cartera'?'cartera':'entregada');
+    var promises=[sbPatch('facturas','id=eq.'+facturaSel.id,{estado:estado})];
+    if(Math.abs(diff)>0.09&&res.data&&res.data[0]){
+      promises.push(sbPost('novedades',{entrega_id:res.data[0].id,tipo:diff<0?'nota_credito':'nota_debito',valor_facturado:facturaSel.kg_facturados,valor_real:kg,diferencia:diff,estado:'pendiente'}));
+    }
+    return Promise.all(promises);
+  }).then(function(){
+    hideLoading();
+    mostrarSuccess(true);
+    recargarEntregas();
+  }).catch(function(e){hideLoading();showToast('Error al registrar');console.error(e);});
+}
 
-  // Calcular kg — si vacío, se toma el facturado (entrega total)
-  let kg=facturaData.kg_facturados;
-  const kgInput=document.getElementById('f-kg').value.trim();
-  if(kgInput){
-    const kgParsed=parseFloat(kgInput.replace(',','.'));
-    if(!isNaN(kgParsed)&&kgParsed>0) kg=kgParsed;
-  }
-
-  // Montos
-  const mEf=pagosActivos.has('efectivo')?parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0:null;
-  const mTr=pagosActivos.has('transferencia')?parseFloat(document.getElementById('monto-transferencia').value.replace(',','.'))||0:null;
-  const mCa=pagosActivos.has('cartera')?parseFloat(document.getElementById('monto-cartera').value.replace(',','.'))||0:null;
-
-  // Metodo de pago
-  let metodoPago;
-  if(pagosActivos.size===1) metodoPago=[...pagosActivos][0];
-  else metodoPago='parcial';
-
-  // Descripcion pago
-  let obsPartes=[];
-  if(mEf!=null) obsPartes.push('Efectivo: $'+Math.round(mEf).toLocaleString('es-CO'));
-  if(mTr!=null) obsPartes.push('Transferencia: $'+Math.round(mTr).toLocaleString('es-CO'));
-  if(mCa!=null) obsPartes.push('Cartera: $'+Math.round(mCa).toLocaleString('es-CO'));
-  const obsFinal=(obsPartes.length>1?obsPartes.join(' + '):'')+( obs?' | '+obs:'');
-
-  showLoading('Subiendo foto de factura...');
-  const ext=fotoFactura.name.split('.').pop()||'jpg';
-  const foto_url=await sbUpload('factura_'+facturaData.consecutivo+'_'+Date.now()+'.'+ext,fotoFactura);
-
-  if(pagosActivos.has('efectivo')){
-    const fe=document.getElementById('foto-efectivo-file').files[0];
-    if(!fe){showToast('La foto del efectivo es obligatoria');return;}
-  }
-  if(pagosActivos.has('transferencia')){
-    const ft=document.getElementById('foto-transf-file').files[0];
-    if(!ft){showToast('La foto del comprobante de transferencia es obligatoria');return;}
-  }
-  let foto_comprobante_url=null;
-  if(pagosActivos.has('transferencia')){
-    const tf=document.getElementById('foto-transf-file').files[0];
-    if(tf){showLoading('Subiendo comprobante...');foto_comprobante_url=await sbUpload('transf_'+facturaData.consecutivo+'_'+Date.now()+'.'+tf.name.split('.').pop(),tf);}
-  }
-
-  // Foto efectivo (guardada como segunda foto en observaciones o campo adicional)
-  let fotoEfectivoUrl=null;
-  if(pagosActivos.has('efectivo')){
-    const fe=document.getElementById('foto-efectivo-file').files[0];
-    if(fe){showLoading('Subiendo foto efectivo...');fotoEfectivoUrl=await sbUpload('ef_'+facturaData.consecutivo+'_'+Date.now()+'.'+fe.name.split('.').pop(),fe);}
-  }
-
-  showLoading('Registrando entrega...');
-  const obsCompleto=(fotoEfectivoUrl?'[FOTO_EF:'+fotoEfectivoUrl+'] ':'')+obsFinal;
-
-  const{data:entrega,error:eErr}=await sbPost('entregas',{
-    factura_id:facturaData.id,kg_recibidos:kg,metodo_pago:metodoPago,
-    foto_url,foto_comprobante_url,
-    monto_efectivo:mEf,monto_transferencia:mTr,
-    observaciones:obsCompleto||null
+function recargarEntregas(){
+  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,registrado_en&limit=5000').then(function(data){
+    todasEntregas=data||[];
+    if(conductorSel) renderFacturasDelDia();
   });
-  if(eErr){hideLoading();showToast('Error: esta factura ya fue registrada');console.error(eErr);return;}
-
-  const diff=Math.round((kg-facturaData.kg_facturados)*10)/10;
-  if(Math.abs(diff)>0.09&&entrega?.[0]){
-    await sbPost('novedades',{entrega_id:entrega[0].id,tipo:diff<0?'nota_credito':'nota_debito',
-      valor_facturado:facturaData.kg_facturados,valor_real:kg,diferencia:diff,estado:'pendiente'});
-    await sbPatch('facturas','id=eq.'+facturaData.id,{estado:'con_novedad'});
-  } else {
-    const est=pagosActivos.has('cartera')&&!pagosActivos.has('efectivo')&&!pagosActivos.has('transferencia')?'cartera':'entregada';
-    await sbPatch('facturas','id=eq.'+facturaData.id,{estado:est});
-  }
-
-  hideLoading();
-  mostrarSuccess(true);
 }
 
 function mostrarSuccess(entrega){
-  const consec=facturaData.consecutivo,cliente=facturaData.clientes?.nombre||'';
+  document.getElementById('form-view').style.display='none';
+  document.getElementById('success-view').classList.add('show');
   if(entrega){
     document.getElementById('s-icon').textContent='✅';
-    document.getElementById('s-title').textContent='¡Entrega registrada!';
+    document.getElementById('s-title').textContent='Entrega registrada!';
     document.getElementById('s-title').style.color='var(--green)';
-    document.getElementById('s-sub').textContent='La información quedó guardada.';
     document.getElementById('s-box').className='s-box green';
     document.getElementById('s-num').style.color='var(--green)';
   } else {
     document.getElementById('s-icon').textContent='↩️';
-    document.getElementById('s-title').textContent='Devolución registrada';
+    document.getElementById('s-title').textContent='Devolucion registrada';
     document.getElementById('s-title').style.color='var(--red)';
-    document.getElementById('s-sub').textContent='Novedad de anulación generada automáticamente.';
     document.getElementById('s-box').className='s-box red';
     document.getElementById('s-num').style.color='var(--red)';
   }
-  document.getElementById('s-num').textContent='#'+consec;
-  document.getElementById('s-cliente').textContent=cliente;
-  document.getElementById('form-view').style.display='none';
-  document.getElementById('success-view').classList.add('show');
+  document.getElementById('s-num').textContent='#'+facturaSel.consecutivo;
 }
 
-function resetForm(){
-  ['f-consec','f-kg','f-obs','monto-efectivo','monto-transferencia','monto-cartera'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['photo-file','photo-dev-file','foto-transf-file','foto-efectivo-file'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['photo-zone','photo-dev-zone','foto-transf-zone','foto-efectivo-zone'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('has-photo');});
-  ['total','devolucion'].forEach(t=>document.getElementById('opt-'+t).className='big-opt');
-  ['efectivo','transferencia','cartera'].forEach(t=>{
-    document.getElementById('pcheck-'+t).classList.remove('activo');
-    document.getElementById('detalle-'+t).classList.remove('show');
-  });
-  document.getElementById('factura-info').classList.remove('show');
-  document.getElementById('card-entrega').style.display='none';
+function resetFormFields(){
+  ['f-kg','f-obs','monto-efectivo','monto-transferencia','monto-cartera'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['photo-file','photo-dev-file','foto-ef-file','foto-tr-file'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['photo-zone','photo-dev-zone','foto-ef-zone','foto-tr-zone'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('has-photo');});
+  ['efectivo','transferencia','cartera'].forEach(function(t){document.getElementById('pcheck-'+t).classList.remove('activo');document.getElementById('detalle-'+t).classList.remove('show');});
+  document.getElementById('opt-recibio').className='big-opt';
+  document.getElementById('opt-devolucion').className='big-opt';
   document.getElementById('sec-dev').style.display='none';
   document.getElementById('sec-normal').style.display='none';
-  document.getElementById('cantidad-box').classList.remove('show');
-  document.getElementById('kg-compare').classList.remove('show');
-  document.getElementById('kg-diff').className='kg-diff';
+  document.getElementById('cantidad-box').className='cantidad-box';
+  document.getElementById('kg-compare').style.display='none';
   document.getElementById('resumen-pago').style.display='none';
-  facturaData=null;tipoEntrega=null;pagosActivos=new Set();
   document.getElementById('form-view').style.display='block';
   document.getElementById('success-view').classList.remove('show');
-  setStep(1);window.scrollTo(0,0);
+  pagosActivos=new Set();tipoEntrega=null;
 }
 
-function setStep(n){for(let i=1;i<=4;i++){const el=document.getElementById('st'+i);if(i<n)el.className='step done';else if(i===n)el.className='step active';else el.className='step';}}
+function mostrarPantalla(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function volverConductores(){conductorSel=null;document.getElementById('btn-continuar').disabled=true;document.querySelectorAll('.conductor-card').forEach(function(c){c.classList.remove('selected');});mostrarPantalla('screen-conductores');document.getElementById('header-sub').textContent='Registro de entregas';}
+function volverFacturas(){resetFormFields();mostrarPantalla('screen-facturas');}
+
 function showLoading(txt){document.getElementById('loading-txt').textContent=txt||'Procesando...';document.getElementById('loading').classList.add('show');}
 function hideLoading(){document.getElementById('loading').classList.remove('show');}
-let toastTimer;
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
+var toastTimer;
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3500);}
 </script>
 </body>
 </html>
