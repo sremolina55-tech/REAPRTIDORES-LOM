@@ -340,7 +340,7 @@ function sbUpload(path,file){var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA
 
 var conductorSel=null, facturaSel=null, pagosActivos=new Set(), tipoEntrega=null;
 var todosRepartidores=[], todasFacturas=[], todasEntregas=[];
-var hoy=new Date().toISOString().split('T')[0];
+var hoy=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Bogota'})).toISOString().split('T')[0];
 
 // Cargar datos al inicio
 window.addEventListener('load',function(){
