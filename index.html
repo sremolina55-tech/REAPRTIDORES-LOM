@@ -433,7 +433,7 @@ window.addEventListener('load',function(){
   Promise.all([
     sbGet('repartidores','select=id,nombre&order=nombre'),
     sbGet('facturas','select=id,consecutivo,fecha,estado,kg_facturados,repartidor_id,sucursal,clientes(nombre)&fecha=gte.'+getDiasAtras(7)+'&order=fecha.desc,consecutivo&limit=2000'),
-    sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&limit=5000')
+    sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000')
   ]).then(function(results){
     todosRepartidores=(results[0]||[]).filter(function(r){
       // Solo mostrar repartidores que tienen facturas hoy
@@ -999,7 +999,7 @@ async function confirmarConsignacion(){
 }
 
 function recargarEntregas(){
-  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&limit=5000').then(function(data){
+  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
     todasEntregas=data||[];
     if(conductorSel) renderFacturasDelDia();
   });
@@ -1044,10 +1044,25 @@ function mostrarPantalla(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  // Si vuelve a facturas, recargar entregas
+  if(id==='screen-facturas'&&conductorSel){
+    sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
+      todasEntregas=data||[];
+      renderFacturasDelDia();
+    });
+  }
 }
 
 function volverConductores(){conductorSel=null;document.getElementById('btn-continuar').disabled=true;document.querySelectorAll('.conductor-card').forEach(function(c){c.classList.remove('selected');});mostrarPantalla('screen-conductores');document.getElementById('header-sub').textContent='Registro de entregas';}
-function volverFacturas(){resetFormFields();mostrarPantalla('screen-facturas');}
+function volverFacturas(){
+  resetFormFields();
+  mostrarPantalla('screen-facturas');
+  // Recargar entregas para reflejar la entrega recien registrada
+  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
+    todasEntregas=data||[];
+    if(conductorSel) renderFacturasDelDia();
+  });
+}
 
 function showLoading(txt){document.getElementById('loading-txt').textContent=txt||'Procesando...';document.getElementById('loading').classList.add('show');}
 function hideLoading(){document.getElementById('loading').classList.remove('show');}
