@@ -711,6 +711,7 @@ function confirmarDevolucion(){
 function confirmarEntrega(){
   if(!facturaSel){showToast('No hay factura seleccionada');return;}
   if(pagosActivos.size===0){showToast('Selecciona al menos un metodo de pago');return;}
+  if(pagosActivos.has('efectivo')){var _mef=parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0;if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}}
   if(pagosActivos.has('efectivo')&&!document.getElementById('foto-ef-file').files[0]){showToast('La foto del efectivo es obligatoria');return;}
   if(pagosActivos.has('transferencia')&&!document.getElementById('foto-tr-file').files[0]){showToast('La foto del comprobante es obligatoria');return;}
   var fotoFactura=document.getElementById('photo-file').files[0];
@@ -884,7 +885,12 @@ function irAConsignacion(){
   document.getElementById('consig-obs').value='';
   document.getElementById('photo-consig-file').value='';
   document.getElementById('photo-consig-zone').classList.remove('has-photo');
-  renderConsigFacturas();
+  showLoading('Cargando facturas...');
+  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
+    todasEntregas=data||[];
+    hideLoading();
+    renderConsigFacturas();
+  }).catch(function(){hideLoading();renderConsigFacturas();});
 }
 
 var consigSeleccionadas=new Set();
