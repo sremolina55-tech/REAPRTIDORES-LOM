@@ -807,7 +807,6 @@ async function irAConsignacionesPendientes(){
     var e=entMap[f.id];
     if(!e) return false;
     if(e.metodo_pago!=='efectivo'&&e.metodo_pago!=='parcial') return false;
-    if(!e.monto_efectivo||e.monto_efectivo<=0) return false;
     if(yaConsignadas.has(f.id)) return false;
     return true;
   }).map(function(f){
@@ -905,7 +904,7 @@ function renderConsigFacturas(){
   todasEntregas.forEach(function(e){entregaMap[e.factura_id]=e;});
   var conEfectivo=misFacturas.filter(function(f){
     var e=entregaMap[f.id];
-    return e&&(e.metodo_pago==='efectivo'||e.metodo_pago==='parcial')&&e.monto_efectivo>0;
+    return e&&(e.metodo_pago==='efectivo'||e.metodo_pago==='parcial');
   });
 
   var list=document.getElementById('consig-facturas-list');
