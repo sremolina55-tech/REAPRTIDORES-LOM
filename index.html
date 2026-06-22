@@ -155,6 +155,14 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 .dev-title{font-size:12px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
 .dev-desc{font-size:13px;color:var(--text2);line-height:1.5;}
 
+/* MOTIVO NOVEDAD/DEVOLUCION */
+.motivo-list{display:flex;flex-direction:column;gap:10px;}
+.motivo-item{display:flex;align-items:center;gap:12px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;cursor:pointer;transition:all 0.15s;user-select:none;}
+.motivo-item:active{transform:scale(0.98);}
+.motivo-item input[type=radio]{width:18px;height:18px;accent-color:var(--rosa);flex-shrink:0;cursor:pointer;}
+.motivo-item span{font-size:14px;color:var(--text);font-weight:500;line-height:1.3;}
+.motivo-item.seleccionado{border-color:var(--rosa);background:var(--rosa-dim);}
+
 .btn-confirm{width:100%;background:var(--rosa);color:#fff;border:none;border-radius:14px;padding:18px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-top:4px;-webkit-appearance:none;}
 .btn-confirm:active{transform:scale(0.98);background:var(--rosa-dark);}
 .btn-confirm.red{background:var(--red);}
@@ -347,6 +355,16 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
             <img id="photo-dev-preview">
           </div>
         </div>
+        <div class="card" id="card-motivo-dev">
+          <div class="sec-title">Motivo de la devolucion <span style="color:var(--red)">*</span></div>
+          <div class="motivo-list" id="motivo-dev-list">
+            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Mala especificacion del producto"><span>a. Mala especificacion del producto</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Mala calidad del producto"><span>b. Mala calidad del producto</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Por horario"><span>c. Por horario</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="otro"><span>d. Otro</span></label>
+          </div>
+          <input class="input" id="motivo-dev-otro-txt" type="text" placeholder="Describe el motivo..." style="display:none;margin-top:12px">
+        </div>
         <button class="btn-confirm red" onclick="confirmarDevolucion()">Confirmar devolucion</button>
       </div>
 
@@ -380,6 +398,16 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
         <div class="card">
           <div class="sec-title">Foto de la factura firmada <span style="color:var(--rosa)">*</span></div>
           <div class="photo-zone" id="photo-zone"><input type="file" id="photo-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-preview','photo-zone')"><div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt">Tomar foto a la factura firmada</div><div class="pp-sub">Obligatorio</div></div><img id="photo-preview"></div>
+        </div>
+        <div class="card" id="card-motivo-normal" style="display:none">
+          <div class="sec-title">Motivo de entrega parcial <span style="color:var(--red)">*</span></div>
+          <div class="motivo-list" id="motivo-normal-list">
+            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Mala especificacion del producto"><span>a. Mala especificacion del producto</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Mala calidad del producto"><span>b. Mala calidad del producto</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Por horario"><span>c. Por horario</span></label>
+            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="otro"><span>d. Otro</span></label>
+          </div>
+          <input class="input" id="motivo-normal-otro-txt" type="text" placeholder="Describe el motivo..." style="display:none;margin-top:12px">
         </div>
         <div class="card">
           <div class="sec-title">Observaciones (opcional)</div>
@@ -660,11 +688,31 @@ function selEntrega(tipo){
   document.getElementById('sec-normal').style.display=tipo==='recibio'?'block':'none';
 }
 
+function selMotivo(el,tipo){
+  var radio=el.querySelector('input[type=radio]');
+  var list=document.getElementById('motivo-'+tipo+'-list');
+  list.querySelectorAll('.motivo-item').forEach(function(item){item.classList.remove('seleccionado');});
+  el.classList.add('seleccionado');
+  radio.checked=true;
+  var otroTxt=document.getElementById('motivo-'+tipo+'-otro-txt');
+  if(radio.value==='otro'){otroTxt.style.display='block';}
+  else{otroTxt.style.display='none';otroTxt.value='';}
+}
+
 function calcDiff(){
   var kg=parseFloat(document.getElementById('f-kg').value.replace(',','.'));
   if(isNaN(kg))return;
   document.getElementById('kc-rec').textContent=kg;
   document.getElementById('kg-compare').style.display='flex';
+  var diff=facturaSel?(kg-facturaSel.kg_facturados):0;
+  var esParcial=facturaSel&&diff<-0.09;
+  document.getElementById('card-motivo-normal').style.display=esParcial?'block':'none';
+  if(!esParcial){
+    document.querySelectorAll('input[name="motivo-normal"]').forEach(function(r){r.checked=false;});
+    document.getElementById('motivo-normal-list').querySelectorAll('.motivo-item').forEach(function(i){i.classList.remove('seleccionado');});
+    document.getElementById('motivo-normal-otro-txt').style.display='none';
+    document.getElementById('motivo-normal-otro-txt').value='';
+  }
 }
 
 function togglePago(tipo){
@@ -692,11 +740,16 @@ function previewImg(input,imgId,zoneId){
 function confirmarDevolucion(){
   var fotoFile=document.getElementById('photo-dev-file').files[0];
   if(!fotoFile){showToast('La foto de la factura devuelta es obligatoria');return;}
+  var motivoRadio=document.querySelector('input[name="motivo-dev"]:checked');
+  if(!motivoRadio){showToast('Selecciona el motivo de la devolucion');return;}
+  var motivoTexto=motivoRadio.value==='otro'?document.getElementById('motivo-dev-otro-txt').value.trim():'';
+  if(motivoRadio.value==='otro'&&!motivoTexto){showToast('Describe el motivo de la devolucion');return;}
+  var obsDevolucion='DEVOLUCION TOTAL - Motivo: '+(motivoRadio.value==='otro'?motivoTexto:motivoRadio.value);
   showLoading('Subiendo foto...');
   var ext=fotoFile.name.split('.').pop()||'jpg';
   sbUpload('dev_'+facturaSel.consecutivo+'_'+Date.now()+'.'+ext,fotoFile).then(function(foto_url){
     showLoading('Registrando...');
-    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:'DEVOLUCION TOTAL'});
+    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:obsDevolucion});
   }).then(function(res){
     if(res.error&&res.error.indexOf('unique')>=0){hideLoading();showToast('Esta factura ya fue registrada');return;}
     return sbPost('novedades',{entrega_id:res.data[0].id,tipo:'anulacion',valor_facturado:facturaSel.kg_facturados,valor_real:0,diferencia:-facturaSel.kg_facturados,estado:'pendiente'})
@@ -724,6 +777,15 @@ function confirmarEntrega(){
   var mCa=pagosActivos.has('cartera')?parseFloat(document.getElementById('monto-cartera').value.replace(',','.'))||0:null;
   var metodoPago=pagosActivos.size===1?Array.from(pagosActivos)[0]:'parcial';
   var obs=document.getElementById('f-obs').value.trim();
+  var diffCheck=Math.round((kg-facturaSel.kg_facturados)*100)/100;
+  if(diffCheck<-0.09){
+    var motivoNormal=document.querySelector('input[name="motivo-normal"]:checked');
+    if(!motivoNormal){showToast('Selecciona el motivo de entrega parcial');return;}
+    var motivoNormalTxt=motivoNormal.value==='otro'?document.getElementById('motivo-normal-otro-txt').value.trim():'';
+    if(motivoNormal.value==='otro'&&!motivoNormalTxt){showToast('Describe el motivo de la entrega parcial');return;}
+    var motivoFinal=motivoNormal.value==='otro'?motivoNormalTxt:motivoNormal.value;
+    obs=(obs?obs+' | ':'')+'Motivo parcial: '+motivoFinal;
+  }
   showLoading('Subiendo foto...');
   var ext=fotoFactura.name.split('.').pop()||'jpg';
   var ts=Date.now();
@@ -1030,6 +1092,10 @@ function mostrarSuccess(entrega){
 
 function resetFormFields(){
   ['f-kg','f-obs','monto-efectivo','monto-transferencia','monto-cartera'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('input[name="motivo-dev"],input[name="motivo-normal"]').forEach(function(r){r.checked=false;});
+  ['motivo-dev-list','motivo-normal-list'].forEach(function(lid){var l=document.getElementById(lid);if(l)l.querySelectorAll('.motivo-item').forEach(function(i){i.classList.remove('seleccionado');});});
+  ['motivo-dev-otro-txt','motivo-normal-otro-txt'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.display='none';el.value='';}});
+  document.getElementById('card-motivo-normal').style.display='none';
   ['photo-file','photo-dev-file','foto-ef-file','foto-tr-file'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   ['photo-zone','photo-dev-zone','foto-ef-zone','foto-tr-zone'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('has-photo');});
   ['efectivo','transferencia','cartera'].forEach(function(t){document.getElementById('pcheck-'+t).classList.remove('activo');document.getElementById('detalle-'+t).classList.remove('show');});
