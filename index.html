@@ -744,12 +744,12 @@ function confirmarDevolucion(){
   if(!motivoRadio){showToast('Selecciona el motivo de la devolucion');return;}
   var motivoTexto=motivoRadio.value==='otro'?document.getElementById('motivo-dev-otro-txt').value.trim():'';
   if(motivoRadio.value==='otro'&&!motivoTexto){showToast('Describe el motivo de la devolucion');return;}
-  var obsDevolucion='DEVOLUCION TOTAL - Motivo: '+(motivoRadio.value==='otro'?motivoTexto:motivoRadio.value);
+  var motivoDev=motivoRadio.value==='otro'?motivoTexto:motivoRadio.value;
   showLoading('Subiendo foto...');
   var ext=fotoFile.name.split('.').pop()||'jpg';
   sbUpload('dev_'+facturaSel.consecutivo+'_'+Date.now()+'.'+ext,fotoFile).then(function(foto_url){
     showLoading('Registrando...');
-    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:obsDevolucion});
+    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:'DEVOLUCION TOTAL',motivo_novedad:motivoDev});
   }).then(function(res){
     if(res.error&&res.error.indexOf('unique')>=0){hideLoading();showToast('Esta factura ya fue registrada');return;}
     return sbPost('novedades',{entrega_id:res.data[0].id,tipo:'anulacion',valor_facturado:facturaSel.kg_facturados,valor_real:0,diferencia:-facturaSel.kg_facturados,estado:'pendiente'})
@@ -778,13 +778,13 @@ function confirmarEntrega(){
   var metodoPago=pagosActivos.size===1?Array.from(pagosActivos)[0]:'parcial';
   var obs=document.getElementById('f-obs').value.trim();
   var diffCheck=Math.round((kg-facturaSel.kg_facturados)*100)/100;
+  var motivoNovedad=null;
   if(diffCheck<-0.09){
     var motivoNormal=document.querySelector('input[name="motivo-normal"]:checked');
     if(!motivoNormal){showToast('Selecciona el motivo de entrega parcial');return;}
     var motivoNormalTxt=motivoNormal.value==='otro'?document.getElementById('motivo-normal-otro-txt').value.trim():'';
     if(motivoNormal.value==='otro'&&!motivoNormalTxt){showToast('Describe el motivo de la entrega parcial');return;}
-    var motivoFinal=motivoNormal.value==='otro'?motivoNormalTxt:motivoNormal.value;
-    obs=(obs?obs+' | ':'')+'Motivo parcial: '+motivoFinal;
+    motivoNovedad=motivoNormal.value==='otro'?motivoNormalTxt:motivoNormal.value;
   }
   showLoading('Subiendo foto...');
   var ext=fotoFactura.name.split('.').pop()||'jpg';
@@ -798,7 +798,7 @@ function confirmarEntrega(){
       return pTr.then(function(fotoTrUrl){
         if(fotoEfUrl) obs=(obs?obs+' ':'')+' [FOTO_EF:'+fotoEfUrl+']';
         showLoading('Registrando...');
-        return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:kg,metodo_pago:metodoPago,foto_url:foto_url,foto_comprobante_url:fotoTrUrl,monto_efectivo:mEf,monto_transferencia:mTr,observaciones:obs||null});
+        return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:kg,metodo_pago:metodoPago,foto_url:foto_url,foto_comprobante_url:fotoTrUrl,monto_efectivo:mEf,monto_transferencia:mTr,observaciones:obs||null,motivo_novedad:motivoNovedad});
       });
     });
   }).then(function(res){
