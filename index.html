@@ -380,18 +380,21 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
           <div class="pago-detalle" id="detalle-efectivo">
             <div class="divider"></div>
             <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
+            <div id="monto-efectivo-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
             <div class="label" style="margin-bottom:8px">Foto del dinero <span style="color:var(--red)">*</span></div>
             <div class="foto-mini green-border" id="foto-ef-zone"><input type="file" id="foto-ef-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-ef-preview','foto-ef-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--green)">Foto del dinero</div><div class="fp-sub">Obligatorio</div></div><img id="foto-ef-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-transferencia">
             <div class="divider"></div>
             <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
+            <div id="monto-transferencia-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
             <div class="label" style="margin-bottom:8px">Foto del comprobante <span style="color:var(--red)">*</span></div>
             <div class="foto-mini" id="foto-tr-zone"><input type="file" id="foto-tr-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-tr-preview','foto-tr-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--blue)">Foto del comprobante</div><div class="fp-sub">Obligatorio</div></div><img id="foto-tr-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-cartera">
             <div class="divider"></div>
             <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
+            <div id="monto-cartera-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
           </div>
           <div class="resumen-pago" id="resumen-pago" style="display:none"><span style="font-size:13px;color:var(--rosa)">Total</span><span style="font-size:18px;font-weight:700;color:var(--rosa)" id="resumen-val">$0</span></div>
         </div>
@@ -726,8 +729,18 @@ function togglePago(tipo){
 
 function formatMontoInput(el){
   var raw=el.value.replace(/\./g,'').replace(/[^0-9]/g,'');
-  if(raw===''){el.value='';return;}
-  el.value=parseInt(raw,10).toLocaleString('es-CO',{maximumFractionDigits:0});
+  var warn=document.getElementById(el.id+'-warn');
+  if(raw===''){el.value='';if(warn)warn.style.display='none';return;}
+  var num=parseInt(raw,10);
+  el.value=num.toLocaleString('es-CO',{maximumFractionDigits:0});
+  if(warn){
+    if(num>0&&num<1000){
+      warn.textContent='Monto muy bajo. Si son $'+num+'.000, escribe '+num+'000';
+      warn.style.display='block';
+    } else {
+      warn.style.display='none';
+    }
+  }
 }
 
 function parseMonto(id){
@@ -774,7 +787,9 @@ function confirmarDevolucion(){
 function confirmarEntrega(){
   if(!facturaSel){showToast('No hay factura seleccionada');return;}
   if(pagosActivos.size===0){showToast('Selecciona al menos un metodo de pago');return;}
-  if(pagosActivos.has('efectivo')){var _mef=parseMonto('monto-efectivo');if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}}
+  if(pagosActivos.has('efectivo')){var _mef=parseMonto('monto-efectivo');if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}if(_mef<1000){showToast('Monto efectivo muy bajo. Si son $'+_mef+'.000, escribe '+_mef+'000');return;}}
+  if(pagosActivos.has('transferencia')){var _mtr=parseMonto('monto-transferencia');if(_mtr>0&&_mtr<1000){showToast('Monto transferencia muy bajo. Si son $'+_mtr+'.000, escribe '+_mtr+'000');return;}}
+  if(pagosActivos.has('cartera')){var _mca=parseMonto('monto-cartera');if(_mca>0&&_mca<1000){showToast('Monto cartera muy bajo. Si son $'+_mca+'.000, escribe '+_mca+'000');return;}}
   if(pagosActivos.has('efectivo')&&!document.getElementById('foto-ef-file').files[0]){showToast('La foto del efectivo es obligatoria');return;}
   if(pagosActivos.has('transferencia')&&!document.getElementById('foto-tr-file').files[0]){showToast('La foto del comprobante es obligatoria');return;}
   var fotoFactura=document.getElementById('photo-file').files[0];
