@@ -379,19 +379,19 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
           </div>
           <div class="pago-detalle" id="detalle-efectivo">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
             <div class="label" style="margin-bottom:8px">Foto del dinero <span style="color:var(--red)">*</span></div>
             <div class="foto-mini green-border" id="foto-ef-zone"><input type="file" id="foto-ef-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-ef-preview','foto-ef-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--green)">Foto del dinero</div><div class="fp-sub">Obligatorio</div></div><img id="foto-ef-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-transferencia">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
             <div class="label" style="margin-bottom:8px">Foto del comprobante <span style="color:var(--red)">*</span></div>
             <div class="foto-mini" id="foto-tr-zone"><input type="file" id="foto-tr-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-tr-preview','foto-tr-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--blue)">Foto del comprobante</div><div class="fp-sub">Obligatorio</div></div><img id="foto-tr-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-cartera">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
           </div>
           <div class="resumen-pago" id="resumen-pago" style="display:none"><span style="font-size:13px;color:var(--rosa)">Total</span><span style="font-size:18px;font-weight:700;color:var(--rosa)" id="resumen-val">$0</span></div>
         </div>
@@ -724,9 +724,19 @@ function togglePago(tipo){
   calcResumen();
 }
 
+function formatMontoInput(el){
+  var raw=el.value.replace(/\./g,'').replace(/[^0-9]/g,'');
+  if(raw===''){el.value='';return;}
+  el.value=parseInt(raw,10).toLocaleString('es-CO',{maximumFractionDigits:0});
+}
+
+function parseMonto(id){
+  return parseFloat((document.getElementById(id).value||'0').replace(/\./g,'').replace(',','.'))||0;
+}
+
 function calcResumen(){
   var total=0;
-  ['efectivo','transferencia','cartera'].forEach(function(t){if(pagosActivos.has(t)){var v=parseFloat(document.getElementById('monto-'+t).value.replace(',','.'))||0;total+=v;}});
+  ['efectivo','transferencia','cartera'].forEach(function(t){if(pagosActivos.has(t)){total+=parseMonto('monto-'+t);}});
   document.getElementById('resumen-val').textContent='$'+Math.round(total).toLocaleString('es-CO');
 }
 
@@ -764,7 +774,7 @@ function confirmarDevolucion(){
 function confirmarEntrega(){
   if(!facturaSel){showToast('No hay factura seleccionada');return;}
   if(pagosActivos.size===0){showToast('Selecciona al menos un metodo de pago');return;}
-  if(pagosActivos.has('efectivo')){var _mef=parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0;if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}}
+  if(pagosActivos.has('efectivo')){var _mef=parseMonto('monto-efectivo');if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}}
   if(pagosActivos.has('efectivo')&&!document.getElementById('foto-ef-file').files[0]){showToast('La foto del efectivo es obligatoria');return;}
   if(pagosActivos.has('transferencia')&&!document.getElementById('foto-tr-file').files[0]){showToast('La foto del comprobante es obligatoria');return;}
   var fotoFactura=document.getElementById('photo-file').files[0];
@@ -772,9 +782,9 @@ function confirmarEntrega(){
   var kg=facturaSel.kg_facturados;
   var kgInput=document.getElementById('f-kg').value.trim();
   if(kgInput){var kp=parseFloat(kgInput.replace(',','.'));if(!isNaN(kp)&&kp>0)kg=kp;}
-  var mEf=pagosActivos.has('efectivo')?parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0:null;
-  var mTr=pagosActivos.has('transferencia')?parseFloat(document.getElementById('monto-transferencia').value.replace(',','.'))||0:null;
-  var mCa=pagosActivos.has('cartera')?parseFloat(document.getElementById('monto-cartera').value.replace(',','.'))||0:null;
+  var mEf=pagosActivos.has('efectivo')?parseMonto('monto-efectivo'):null;
+  var mTr=pagosActivos.has('transferencia')?parseMonto('monto-transferencia'):null;
+  var mCa=pagosActivos.has('cartera')?parseMonto('monto-cartera'):null;
   var metodoPago=pagosActivos.size===1?Array.from(pagosActivos)[0]:'parcial';
   var obs=document.getElementById('f-obs').value.trim();
   var diffCheck=Math.round((kg-facturaSel.kg_facturados)*100)/100;
