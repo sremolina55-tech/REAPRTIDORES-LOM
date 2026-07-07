@@ -42,6 +42,13 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 .conductor-nombre{font-size:14px;font-weight:600;color:var(--text);line-height:1.3;}
 .conductor-count{font-size:11px;color:var(--text3);margin-top:4px;}
 .conductor-count.pending{color:var(--amber);font-weight:600;}
+.consig-badge{font-size:10px;font-weight:700;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;margin-top:4px;display:inline-block;}
+.tab-bar{display:flex;background:var(--cream2);border-radius:12px;padding:4px;gap:4px;margin-bottom:16px;}
+.tab-btn{flex:1;padding:10px 8px;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;background:transparent;color:var(--text2);transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.tab-btn.active{background:#fff;color:var(--rosa);box-shadow:0 1px 6px rgba(232,69,110,0.15);}
+.tab-badge{background:var(--amber);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
 .btn-continuar{width:100%;background:var(--rosa);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;-webkit-appearance:none;transition:all 0.2s;}
 .btn-continuar:active{background:var(--rosa-dark);}
@@ -155,14 +162,6 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 .dev-title{font-size:12px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
 .dev-desc{font-size:13px;color:var(--text2);line-height:1.5;}
 
-/* MOTIVO NOVEDAD/DEVOLUCION */
-.motivo-list{display:flex;flex-direction:column;gap:10px;}
-.motivo-item{display:flex;align-items:center;gap:12px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;cursor:pointer;transition:all 0.15s;user-select:none;}
-.motivo-item:active{transform:scale(0.98);}
-.motivo-item input[type=radio]{width:18px;height:18px;accent-color:var(--rosa);flex-shrink:0;cursor:pointer;}
-.motivo-item span{font-size:14px;color:var(--text);font-weight:500;line-height:1.3;}
-.motivo-item.seleccionado{border-color:var(--rosa);background:var(--rosa-dim);}
-
 .btn-confirm{width:100%;background:var(--rosa);color:#fff;border:none;border-radius:14px;padding:18px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;margin-top:4px;-webkit-appearance:none;}
 .btn-confirm:active{transform:scale(0.98);background:var(--rosa-dark);}
 .btn-confirm.red{background:var(--red);}
@@ -193,6 +192,13 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
 .loading-txt{font-size:13px;color:var(--text3);}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:500;display:none;white-space:nowrap;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
 .toast.show{display:block;}
+.consig-alert{background:var(--amber-dim);border:1.5px solid rgba(200,120,32,0.4);border-radius:14px;padding:14px 16px;display:none;margin-bottom:14px;cursor:pointer;transition:all 0.15s;}
+.consig-alert:active{transform:scale(0.98);}
+.consig-alert.show{display:flex;align-items:center;gap:12px;}
+.consig-alert-icon{font-size:24px;flex-shrink:0;}
+.consig-alert-body{flex:1;}
+.consig-alert-title{font-size:13px;font-weight:700;color:var(--amber);}
+.consig-alert-sub{font-size:12px;color:var(--text2);margin-top:2px;}
 </style>
 </head>
 <body>
@@ -213,11 +219,8 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
     <div class="conductor-sub">Selecciona tu nombre para ver tus facturas del dia</div>
     <div class="conductores-grid" id="conductores-grid"></div>
     <button class="btn-continuar" id="btn-continuar" disabled onclick="irAFacturas()">Ver mis facturas</button>
-    <div id="sec-anteriores-btn" style="display:none;margin-top:12px">
-      <button class="btn-continuar" style="background:#fff;color:var(--red);border:2px solid var(--red);font-size:14px" onclick="mostrarConductoresAnteriores()">&#9888; Ver pendientes de dias anteriores</button>
-    </div>
-    <div id="sec-anteriores-grid" style="display:none;margin-top:16px">
-      <div class="section-label" style="color:var(--red);margin-bottom:12px">Conductores con pendientes anteriores</div>
+    <div id="sec-anteriores-grid" style="display:none;margin-top:20px">
+      <div class="section-label" style="color:var(--amber);margin-bottom:12px">&#9888; Con consignaciones pendientes</div>
       <div class="conductores-grid" id="conductores-anteriores-grid"></div>
     </div>
   </div>
@@ -232,22 +235,32 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
         <div class="conductor-info-sub" id="conductor-fecha-header"></div>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stat-mini rosa"><div class="stat-mini-val" id="st-total">0</div><div class="stat-mini-lbl">Total</div></div>
-      <div class="stat-mini green"><div class="stat-mini-val" id="st-entregadas">0</div><div class="stat-mini-lbl">Listas</div></div>
-      <div class="stat-mini amber"><div class="stat-mini-val" id="st-pendientes">0</div><div class="stat-mini-lbl">Faltan</div></div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-fact-btn" onclick="switchTab('fact')">Facturas</button>
+      <button class="tab-btn" id="tab-consig-btn" onclick="switchTab('consig')">Consignaciones <span class="tab-badge" id="tab-consig-badge" style="display:none">0</span></button>
     </div>
-    <div id="facturas-pendientes-sec">
-      <div class="section-label">Por entregar</div>
-      <div id="facturas-pendientes-list"></div>
+    <div class="tab-panel active" id="tab-fact">
+      <div class="stats-row">
+        <div class="stat-mini rosa"><div class="stat-mini-val" id="st-total">0</div><div class="stat-mini-lbl">Total</div></div>
+        <div class="stat-mini green"><div class="stat-mini-val" id="st-entregadas">0</div><div class="stat-mini-lbl">Cerradas</div></div>
+        <div class="stat-mini amber"><div class="stat-mini-val" id="st-pendientes">0</div><div class="stat-mini-lbl">Faltan</div></div>
+      </div>
+      <div id="facturas-pendientes-sec">
+        <div class="section-label">Por entregar</div>
+        <div id="facturas-pendientes-list"></div>
+      </div>
+      <div id="facturas-listas-sec" style="margin-top:16px">
+        <div class="section-label">Ya registradas hoy</div>
+        <div id="facturas-listas-list"></div>
+      </div>
     </div>
-    <div id="facturas-listas-sec" style="margin-top:16px">
-      <div class="section-label">Ya registradas hoy</div>
-      <div id="facturas-listas-list"></div>
-    </div>
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
-      <button class="btn-continuar" style="background:var(--blue);font-size:15px" onclick="irAConsignacion()">&#128181; Registrar consignacion del dia</button>
-      <button class="btn-continuar" style="background:#fff;color:var(--blue);border:2px solid var(--blue);font-size:15px" onclick="irAConsignacionesPendientes()">&#9200; Consignaciones pendientes</button>
+    <div class="tab-panel" id="tab-consig">
+      <div id="consig-pendientes-inline"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Cargando...</div></div>
+      <div id="cpend-resumen" style="display:none;justify-content:space-between;align-items:center;padding:12px 0;margin-top:4px;border-top:1px solid var(--border)">
+        <div style="font-size:13px;color:var(--text2)"><span id="cpend-count">0</span> seleccionadas</div>
+        <div style="font-size:15px;font-weight:700;color:var(--amber)" id="cpend-total">$0</div>
+      </div>
+      <button id="cpend-btn" class="btn-confirm" style="display:none;background:var(--amber);margin-top:10px" onclick="registrarPendientesSeleccionadas()">Registrar seleccionadas</button>
     </div>
   </div>
 
@@ -256,7 +269,7 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
     <button class="back-btn" onclick="volverFacturas()"><span>&#8592;</span> Mis facturas</button>
     <div class="card" style="background:var(--amber-dim);border-color:rgba(200,120,32,0.25);margin-bottom:14px">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--amber);margin-bottom:4px;font-weight:600">Consignaciones pendientes</div>
-      <div style="font-size:13px;color:var(--text2)">Facturas de dias anteriores con efectivo que aun no han sido consignadas</div>
+      <div style="font-size:13px;color:var(--text2)">Facturas con efectivo que aun no han sido consignadas</div>
     </div>
     <div id="pend-list"></div>
   </div>
@@ -355,16 +368,6 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
             <img id="photo-dev-preview">
           </div>
         </div>
-        <div class="card" id="card-motivo-dev">
-          <div class="sec-title">Motivo de la devolucion <span style="color:var(--red)">*</span></div>
-          <div class="motivo-list" id="motivo-dev-list">
-            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Mala especificacion del producto"><span>a. Mala especificacion del producto</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Mala calidad del producto"><span>b. Mala calidad del producto</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="Por horario"><span>c. Por horario</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'dev')"><input type="radio" name="motivo-dev" value="otro"><span>d. Otro</span></label>
-          </div>
-          <input class="input" id="motivo-dev-otro-txt" type="text" placeholder="Describe el motivo..." style="display:none;margin-top:12px">
-        </div>
         <button class="btn-confirm red" onclick="confirmarDevolucion()">Confirmar devolucion</button>
       </div>
 
@@ -379,38 +382,25 @@ html,body{min-height:100vh;background:var(--cream);font-family:'DM Sans',sans-se
           </div>
           <div class="pago-detalle" id="detalle-efectivo">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
-            <div id="monto-efectivo-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-efectivo" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
             <div class="label" style="margin-bottom:8px">Foto del dinero <span style="color:var(--red)">*</span></div>
             <div class="foto-mini green-border" id="foto-ef-zone"><input type="file" id="foto-ef-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-ef-preview','foto-ef-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--green)">Foto del dinero</div><div class="fp-sub">Obligatorio</div></div><img id="foto-ef-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-transferencia">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
-            <div id="monto-transferencia-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-transferencia" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
             <div class="label" style="margin-bottom:8px">Foto del comprobante <span style="color:var(--red)">*</span></div>
             <div class="foto-mini" id="foto-tr-zone"><input type="file" id="foto-tr-file" accept="image/*" capture="environment" onchange="previewImg(this,'foto-tr-preview','foto-tr-zone')"><div class="fp"><div class="fp-icon">&#128247;</div><div class="fp-txt" style="color:var(--blue)">Foto del comprobante</div><div class="fp-sub">Obligatorio</div></div><img id="foto-tr-preview"></div>
           </div>
           <div class="pago-detalle" id="detalle-cartera">
             <div class="divider"></div>
-            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="numeric" placeholder="0" oninput="formatMontoInput(this);calcResumen()"></div>
-            <div id="monto-cartera-warn" style="display:none;color:#c0392b;font-size:12px;font-weight:600;padding:2px 0 6px;line-height:1.4"></div>
+            <div class="monto-row"><span class="monto-lbl">Monto</span><input class="monto-input" id="monto-cartera" type="text" inputmode="decimal" placeholder="0" oninput="calcResumen()"></div>
           </div>
           <div class="resumen-pago" id="resumen-pago" style="display:none"><span style="font-size:13px;color:var(--rosa)">Total</span><span style="font-size:18px;font-weight:700;color:var(--rosa)" id="resumen-val">$0</span></div>
         </div>
         <div class="card">
           <div class="sec-title">Foto de la factura firmada <span style="color:var(--rosa)">*</span></div>
           <div class="photo-zone" id="photo-zone"><input type="file" id="photo-file" accept="image/*" capture="environment" onchange="previewImg(this,'photo-preview','photo-zone')"><div class="pp"><div class="pp-icon">&#128247;</div><div class="pp-txt">Tomar foto a la factura firmada</div><div class="pp-sub">Obligatorio</div></div><img id="photo-preview"></div>
-        </div>
-        <div class="card" id="card-motivo-normal" style="display:none">
-          <div class="sec-title">Motivo de entrega parcial <span style="color:var(--red)">*</span></div>
-          <div class="motivo-list" id="motivo-normal-list">
-            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Mala especificacion del producto"><span>a. Mala especificacion del producto</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Mala calidad del producto"><span>b. Mala calidad del producto</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="Por horario"><span>c. Por horario</span></label>
-            <label class="motivo-item" onclick="selMotivo(this,'normal')"><input type="radio" name="motivo-normal" value="otro"><span>d. Otro</span></label>
-          </div>
-          <input class="input" id="motivo-normal-otro-txt" type="text" placeholder="Describe el motivo..." style="display:none;margin-top:12px">
         </div>
         <div class="card">
           <div class="sec-title">Observaciones (opcional)</div>
@@ -444,6 +434,7 @@ function sbUpload(path,file){var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA
 
 var conductorSel=null, facturaSel=null, pagosActivos=new Set(), tipoEntrega=null;
 var todosRepartidores=[], todasFacturas=[], todasEntregas=[];
+var _consigPendientesPorRep={};
 function getDiasAtras(n){
   var d=new Date(new Date().getTime()+(-5*60)*60000);
   d.setDate(d.getDate()-n);
@@ -463,7 +454,7 @@ window.addEventListener('load',function(){
   showLoading('Cargando conductores...');
   Promise.all([
     sbGet('repartidores','select=id,nombre&order=nombre'),
-    sbGet('facturas','select=id,consecutivo,fecha,estado,kg_facturados,repartidor_id,sucursal,clientes(nombre)&fecha=gte.'+getDiasAtras(7)+'&order=fecha.desc,consecutivo&limit=2000'),
+    sbGet('facturas','select=id,consecutivo,fecha,estado,kg_facturados,repartidor_id,sucursal,direccion,clientes(nombre)&fecha=gte.'+getDiasAtras(7)+'&order=fecha.desc,consecutivo&limit=2000'),
     sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000')
   ]).then(function(results){
     todosRepartidores=(results[0]||[]).filter(function(r){
@@ -475,8 +466,50 @@ window.addEventListener('load',function(){
     todasEntregas=results[2]||[];
     hideLoading();
     renderConductores();
+  }).then(function(){
+    cargarConsignacionesPendientesPorRep();
   }).catch(function(e){hideLoading();showToast('Error de conexion');console.error(e);});
 });
+
+async function cargarConsignacionesPendientesPorRep(){
+  try{
+    var H2={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY};
+    var entregas=await fetch(SUPA_URL+'/rest/v1/entregas?select=factura_id,monto_efectivo&metodo_pago=in.(efectivo,parcial)&monto_efectivo=gt.0&limit=2000',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+    if(!entregas.length) return;
+    var efIds=entregas.map(function(e){return e.factura_id;});
+    var yaConsig=new Set();
+    for(var ci=0;ci<efIds.length;ci+=50){
+      var chunk=efIds.slice(ci,ci+50);
+      var cr=await fetch(SUPA_URL+'/rest/v1/consignacion_facturas?select=factura_id&factura_id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+      cr.forEach(function(c){yaConsig.add(c.factura_id);});
+    }
+    var pendIds=efIds.filter(function(id){return !yaConsig.has(id);});
+    if(!pendIds.length){_consigPendientesPorRep={};renderConductores();return;}
+    var porRep={};
+    for(var ci=0;ci<pendIds.length;ci+=50){
+      var chunk=pendIds.slice(ci,ci+50);
+      var facts=await fetch(SUPA_URL+'/rest/v1/facturas?select=id,repartidor_id&id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+      facts.forEach(function(f){if(f.repartidor_id){porRep[f.repartidor_id]=(porRep[f.repartidor_id]||0)+1;}});
+    }
+    _consigPendientesPorRep=porRep;
+    renderConductores();
+  }catch(e){console.error(e);}
+}
+
+function actualizarBadgesConsig(){
+  document.querySelectorAll('.conductor-card').forEach(function(card){
+    var repId=card.getAttribute('data-id');
+    var count=_consigPendientesPorRep[repId]||0;
+    var badge=card.querySelector('.consig-badge');
+    if(count>0){
+      if(!badge){badge=document.createElement('div');badge.className='consig-badge';card.appendChild(badge);}
+      badge.textContent='&#9888; '+count+' sin consignar';
+      badge.innerHTML='&#9888; '+count+' sin consignar';
+    } else {
+      if(badge) badge.remove();
+    }
+  });
+}
 
 function getIniciales(nombre){
   var parts=nombre.trim().split(' ');
@@ -502,26 +535,33 @@ function renderConductores(){
       conductoresHoy.push({rep:rep,idx:idx,hoyFacts:hoyFacts});
     } else {
       var antPend=todasFacturas.filter(function(f){return f.repartidor_id===rep.id&&f.fecha!==hoy&&!entregaMap[f.id];});
-      if(antPend.length>0) conductoresAnt.push({rep:rep,idx:idx,antPend:antPend});
+      var consigPend=_consigPendientesPorRep[rep.id]||0;
+      if(antPend.length>0||consigPend>0) conductoresAnt.push({rep:rep,idx:idx,antPend:antPend});
     }
   });
 
-  document.getElementById('sec-anteriores-btn').style.display=conductoresAnt.length?'block':'none';
   window._conductoresAnt=conductoresAnt;
+  mostrarConductoresAnteriores();
 
   var html='';
   conductoresHoy.forEach(function(item){
     var rep=item.rep; var idx=item.idx;
-    var pendientes=item.hoyFacts.filter(function(f){return !entregaMap[f.id];}).length;
+    var total=item.hoyFacts.length;
+    var entregadas=item.hoyFacts.filter(function(f){return !!entregaMap[f.id];}).length;
+    var porEntregar=total-entregadas;
     var color=getColor(idx);
     var safeNombre=rep.nombre.replace(/'/g,'&#39;');
+    var subLine=porEntregar>0
+      ?'<span style="color:var(--amber);font-weight:700">'+porEntregar+' por entregar</span> · '+entregadas+' cerradas'
+      :'<span style="color:var(--green);font-weight:700">&#10003; Todas cerradas</span>';
     html+='<div class="conductor-card" id="card-'+idx+'" data-id="'+rep.id+'" data-nombre="'+safeNombre+'" data-idx="'+idx+'" onclick="selConductorByEl(this)">';
     html+='<div class="conductor-avatar" style="background:'+color+'">'+getIniciales(rep.nombre)+'</div>';
     html+='<div class="conductor-nombre">'+rep.nombre+'</div>';
-    html+='<div class="conductor-count pending">'+pendientes+' pendientes</div>';
+    html+='<div class="conductor-count" style="font-size:12px;margin-top:5px">'+subLine+'</div>';
     html+='</div>';
   });
   grid.innerHTML=html||'<div style="grid-column:span 2;text-align:center;color:var(--text3);padding:20px;font-size:13px">No hay conductores con facturas hoy</div>';
+  actualizarBadgesConsig();
 }
 
 function mostrarConductoresAnteriores(){
@@ -530,16 +570,18 @@ function mostrarConductoresAnteriores(){
   conductoresAnt.forEach(function(item){
     var rep=item.rep; var idx=item.idx;
     var safeNombre=rep.nombre.replace(/'/g,'&#39;');
+    var consigPend=_consigPendientesPorRep[rep.id]||0;
+    var subLine=item.antPend.length>0
+      ?'<span style="color:var(--red);font-weight:700">'+item.antPend.length+' sin entregar</span>'
+      :'<span style="color:var(--text3)">No salio hoy</span>';
     html+='<div class="conductor-card" style="border-color:rgba(212,64,80,0.3)" id="card-ant-'+idx+'" data-id="'+rep.id+'" data-nombre="'+safeNombre+'" data-idx="'+idx+'" onclick="selConductorByEl(this)">';
     html+='<div class="conductor-avatar" style="background:var(--red)">'+getIniciales(rep.nombre)+'</div>';
     html+='<div class="conductor-nombre">'+rep.nombre+'</div>';
-    html+='<div class="conductor-count pending" style="color:var(--red)">'+item.antPend.length+' de dias ant.</div>';
+    html+='<div class="conductor-count" style="font-size:12px;margin-top:5px">'+subLine+'</div>';
     html+='</div>';
   });
   document.getElementById('conductores-anteriores-grid').innerHTML=html;
-  document.getElementById('sec-anteriores-grid').style.display='block';
-  document.getElementById('sec-anteriores-grid').scrollIntoView({behavior:'smooth'});
-  document.getElementById('sec-anteriores-btn').style.display='none';
+  document.getElementById('sec-anteriores-grid').style.display=conductoresAnt.length?'block':'none';
 }
 
 function selConductorByEl(el){
@@ -568,7 +610,75 @@ function irAFacturas(){
   av.style.background=getColor(conductorSel.idx);
   document.getElementById('conductor-nombre-header').textContent=conductorSel.nombre;
   document.getElementById('conductor-fecha-header').textContent='Facturas del '+hoy;
+  switchTab('fact');
   renderFacturasDelDia();
+  cargarConsignacionesInline();
+}
+
+function switchTab(tab){
+  document.getElementById('tab-fact').classList.toggle('active',tab==='fact');
+  document.getElementById('tab-consig').classList.toggle('active',tab==='consig');
+  document.getElementById('tab-fact-btn').classList.toggle('active',tab==='fact');
+  document.getElementById('tab-consig-btn').classList.toggle('active',tab==='consig');
+}
+
+async function cargarConsignacionesInline(){
+  if(!conductorSel) return;
+  var inlineList=document.getElementById('consig-pendientes-inline');
+  inlineList.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Cargando...</div>';
+  document.getElementById('cpend-btn').style.display='none';
+  document.getElementById('cpend-resumen').style.display='none';
+  try{
+    var H2={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY};
+    var fRes=await fetch(SUPA_URL+'/rest/v1/facturas?select=id,consecutivo,fecha,cliente_id&fecha=lte.'+hoy+'&repartidor_id=eq.'+conductorSel.id+'&order=fecha.desc&limit=2000',{headers:H2});
+    var facturasAll=await fRes.json();
+    if(!Array.isArray(facturasAll)||!facturasAll.length){sec.style.display='none';return;}
+    var cRes=await fetch(SUPA_URL+'/rest/v1/clientes?select=id,nombre&limit=1000',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+    var cMap={};(cRes||[]).forEach(function(c){cMap[c.id]=c.nombre;});
+    var ids=facturasAll.map(function(f){return f.id;});
+    var entregasEf=[];
+    for(var i=0;i<ids.length;i+=50){
+      var chunk=ids.slice(i,i+50);
+      var ed=await fetch(SUPA_URL+'/rest/v1/entregas?select=factura_id,monto_efectivo&metodo_pago=in.(efectivo,parcial)&monto_efectivo=gt.0&factura_id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+      entregasEf=entregasEf.concat(ed);
+    }
+    var entMap={};entregasEf.forEach(function(e){entMap[e.factura_id]=e;});
+    var efIds=entregasEf.map(function(e){return e.factura_id;});
+    var badge=document.getElementById('tab-consig-badge');
+    if(!efIds.length){
+      inlineList.innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>Sin consignaciones pendientes</p></div>';
+      if(badge){badge.style.display='none';}
+      return;
+    }
+    var yaConsig=new Set();
+    for(var i=0;i<efIds.length;i+=50){
+      var chunk=efIds.slice(i,i+50);
+      var cd=await fetch(SUPA_URL+'/rest/v1/consignacion_facturas?select=factura_id&factura_id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+      cd.forEach(function(c){yaConsig.add(c.factura_id);});
+    }
+    var fMap={};facturasAll.forEach(function(f){fMap[f.id]=f;});
+    var pendientes=efIds.filter(function(id){return !yaConsig.has(id);}).map(function(id){
+      var f=fMap[id];
+      return Object.assign({},f,{cliente:cMap[f.cliente_id]||'-',monto_efectivo:entMap[id].monto_efectivo});
+    }).filter(function(f){return !!f.id;});
+    if(badge){badge.textContent=pendientes.length;badge.style.display=pendientes.length?'':'none';}
+    if(!pendientes.length){
+      inlineList.innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>Sin consignaciones pendientes</p></div>';
+      return;
+    }
+    pendSeleccionadas=new Set();
+    window._facturasAnteriores=pendientes;
+    var html='';
+    pendientes.forEach(function(f){
+      html+='<div class="consig-item" data-fid="'+f.id+'" data-monto="'+f.monto_efectivo+'" onclick="togglePendiente(this)">';
+      html+='<div class="consig-check" id="pchk-'+f.id+'"></div>';
+      html+='<div class="consig-info"><div class="consig-consec">#'+f.consecutivo+'</div><div class="consig-cliente">'+f.cliente+'</div>';
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+f.fecha+'</div></div>';
+      html+='<div class="consig-monto">$'+Math.round(f.monto_efectivo).toLocaleString('es-CO')+'</div>';
+      html+='</div>';
+    });
+    inlineList.innerHTML=html;
+  }catch(e){inlineList.innerHTML='<div class="empty-state"><div class="empty-icon">&#9888;</div><p>Error al cargar</p></div>';console.error(e);}
 }
 
 function renderFacturasDelDia(){
@@ -595,13 +705,14 @@ function renderFacturasDelDia(){
       html+='<div class="factura-item pendiente" data-fid="'+f.id+'" onclick="abrirFacturaByEl(this)">';
       html+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge pendiente">Pendiente</span></div>';
       html+='<div class="fi-cliente">'+(f.clientes&&f.clientes.nombre?f.clientes.nombre:'-')+'</div>';
-      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) html+='<div class="fi-meta" style="color:var(--text2)">'+f.sucursal+'</div>';
+      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) html+='<div class="fi-meta" style="color:var(--text2);font-weight:600">&#x1F3E2; '+f.sucursal+'</div>';
+      if(f.direccion) html+='<div class="fi-meta" style="color:var(--text3)">&#x1F4CD; '+f.direccion+'</div>';
       html+='<div class="fi-meta">'+f.kg_facturados+' uds facturadas</div>';
       html+='</div>';
     });
     pList.innerHTML=html;
   } else {
-    pList.innerHTML='<div class="empty-state"><div class="empty-icon">&#127881;</div><p>Todas entregadas!</p></div>';
+    pList.innerHTML='<div class="empty-state"><div class="empty-icon">&#127881;</div><p>Todas cerradas!</p></div>';
   }
 
   // Pendientes de dias anteriores
@@ -618,7 +729,9 @@ function renderFacturasDelDia(){
       aHtml+='<div class="factura-item pendiente" style="border-left-color:var(--red)" data-fid="'+f.id+'" onclick="abrirFacturaByEl(this)">';
       aHtml+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge" style="background:var(--red-dim);color:var(--red)">'+f.fecha+'</span></div>';
       aHtml+='<div class="fi-cliente">'+(f.clientes&&f.clientes.nombre?f.clientes.nombre:'-')+'</div>';
-      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) aHtml+='<div class="fi-meta" style="color:var(--text2)">'+f.sucursal+'</div>';
+      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) aHtml+='<div class="fi-meta" style="color:var(--text2);font-weight:600">&#x1F3E2; '+f.sucursal+'</div>';
+      if(f.direccion) aHtml+='<div class="fi-meta" style="color:var(--text3)">&#x1F4CD; '+f.direccion+'</div>';
+
       aHtml+='<div class="fi-meta">'+f.kg_facturados+' uds · Del '+f.fecha+'</div>';
       aHtml+='</div>';
     });
@@ -640,6 +753,8 @@ function renderFacturasDelDia(){
       html2+='<div class="factura-item '+badge+'">';
       html2+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge '+badge+'">'+badgeTxt+'</span></div>';
       html2+='<div class="fi-cliente">'+(f.clientes&&f.clientes.nombre?f.clientes.nombre:'-')+'</div>';
+      if(f.sucursal&&f.sucursal!==f.clientes?.nombre) html2+='<div class="fi-meta" style="color:var(--text2);font-weight:600">&#x1F3E2; '+f.sucursal+'</div>';
+      if(f.direccion) html2+='<div class="fi-meta" style="color:var(--text3)">&#x1F4CD; '+f.direccion+'</div>';
       html2+='<div class="fi-meta">'+(e&&e.metodo_pago?e.metodo_pago:'')+(e&&e.registrado_en?' · '+new Date(e.registrado_en).toTimeString().slice(0,5):'')+'</div>';
       html2+='</div>';
     });
@@ -691,31 +806,11 @@ function selEntrega(tipo){
   document.getElementById('sec-normal').style.display=tipo==='recibio'?'block':'none';
 }
 
-function selMotivo(el,tipo){
-  var radio=el.querySelector('input[type=radio]');
-  var list=document.getElementById('motivo-'+tipo+'-list');
-  list.querySelectorAll('.motivo-item').forEach(function(item){item.classList.remove('seleccionado');});
-  el.classList.add('seleccionado');
-  radio.checked=true;
-  var otroTxt=document.getElementById('motivo-'+tipo+'-otro-txt');
-  if(radio.value==='otro'){otroTxt.style.display='block';}
-  else{otroTxt.style.display='none';otroTxt.value='';}
-}
-
 function calcDiff(){
   var kg=parseFloat(document.getElementById('f-kg').value.replace(',','.'));
   if(isNaN(kg))return;
   document.getElementById('kc-rec').textContent=kg;
   document.getElementById('kg-compare').style.display='flex';
-  var diff=facturaSel?(kg-facturaSel.kg_facturados):0;
-  var esParcial=facturaSel&&diff<-0.09;
-  document.getElementById('card-motivo-normal').style.display=esParcial?'block':'none';
-  if(!esParcial){
-    document.querySelectorAll('input[name="motivo-normal"]').forEach(function(r){r.checked=false;});
-    document.getElementById('motivo-normal-list').querySelectorAll('.motivo-item').forEach(function(i){i.classList.remove('seleccionado');});
-    document.getElementById('motivo-normal-otro-txt').style.display='none';
-    document.getElementById('motivo-normal-otro-txt').value='';
-  }
 }
 
 function togglePago(tipo){
@@ -727,29 +822,9 @@ function togglePago(tipo){
   calcResumen();
 }
 
-function formatMontoInput(el){
-  var raw=el.value.replace(/\./g,'').replace(/[^0-9]/g,'');
-  var warn=document.getElementById(el.id+'-warn');
-  if(raw===''){el.value='';if(warn)warn.style.display='none';return;}
-  var num=parseInt(raw,10);
-  el.value=num.toLocaleString('es-CO',{maximumFractionDigits:0});
-  if(warn){
-    if(num>0&&num<1000){
-      warn.textContent='Monto muy bajo. Si son $'+num+'.000, escribe '+num+'000';
-      warn.style.display='block';
-    } else {
-      warn.style.display='none';
-    }
-  }
-}
-
-function parseMonto(id){
-  return parseFloat((document.getElementById(id).value||'0').replace(/\./g,'').replace(',','.'))||0;
-}
-
 function calcResumen(){
   var total=0;
-  ['efectivo','transferencia','cartera'].forEach(function(t){if(pagosActivos.has(t)){total+=parseMonto('monto-'+t);}});
+  ['efectivo','transferencia','cartera'].forEach(function(t){if(pagosActivos.has(t)){var v=parseFloat(document.getElementById('monto-'+t).value.replace(',','.'))||0;total+=v;}});
   document.getElementById('resumen-val').textContent='$'+Math.round(total).toLocaleString('es-CO');
 }
 
@@ -763,16 +838,11 @@ function previewImg(input,imgId,zoneId){
 function confirmarDevolucion(){
   var fotoFile=document.getElementById('photo-dev-file').files[0];
   if(!fotoFile){showToast('La foto de la factura devuelta es obligatoria');return;}
-  var motivoRadio=document.querySelector('input[name="motivo-dev"]:checked');
-  if(!motivoRadio){showToast('Selecciona el motivo de la devolucion');return;}
-  var motivoTexto=motivoRadio.value==='otro'?document.getElementById('motivo-dev-otro-txt').value.trim():'';
-  if(motivoRadio.value==='otro'&&!motivoTexto){showToast('Describe el motivo de la devolucion');return;}
-  var motivoDev=motivoRadio.value==='otro'?motivoTexto:motivoRadio.value;
   showLoading('Subiendo foto...');
   var ext=fotoFile.name.split('.').pop()||'jpg';
   sbUpload('dev_'+facturaSel.consecutivo+'_'+Date.now()+'.'+ext,fotoFile).then(function(foto_url){
     showLoading('Registrando...');
-    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:'DEVOLUCION TOTAL',motivo_novedad:motivoDev});
+    return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:0,metodo_pago:'devolucion',foto_url:foto_url,observaciones:'DEVOLUCION TOTAL'});
   }).then(function(res){
     if(res.error&&res.error.indexOf('unique')>=0){hideLoading();showToast('Esta factura ya fue registrada');return;}
     return sbPost('novedades',{entrega_id:res.data[0].id,tipo:'anulacion',valor_facturado:facturaSel.kg_facturados,valor_real:0,diferencia:-facturaSel.kg_facturados,estado:'pendiente'})
@@ -787,9 +857,6 @@ function confirmarDevolucion(){
 function confirmarEntrega(){
   if(!facturaSel){showToast('No hay factura seleccionada');return;}
   if(pagosActivos.size===0){showToast('Selecciona al menos un metodo de pago');return;}
-  if(pagosActivos.has('efectivo')){var _mef=parseMonto('monto-efectivo');if(_mef<=0){showToast('El monto en efectivo es obligatorio');return;}if(_mef<1000){showToast('Monto efectivo muy bajo. Si son $'+_mef+'.000, escribe '+_mef+'000');return;}}
-  if(pagosActivos.has('transferencia')){var _mtr=parseMonto('monto-transferencia');if(_mtr>0&&_mtr<1000){showToast('Monto transferencia muy bajo. Si son $'+_mtr+'.000, escribe '+_mtr+'000');return;}}
-  if(pagosActivos.has('cartera')){var _mca=parseMonto('monto-cartera');if(_mca>0&&_mca<1000){showToast('Monto cartera muy bajo. Si son $'+_mca+'.000, escribe '+_mca+'000');return;}}
   if(pagosActivos.has('efectivo')&&!document.getElementById('foto-ef-file').files[0]){showToast('La foto del efectivo es obligatoria');return;}
   if(pagosActivos.has('transferencia')&&!document.getElementById('foto-tr-file').files[0]){showToast('La foto del comprobante es obligatoria');return;}
   var fotoFactura=document.getElementById('photo-file').files[0];
@@ -797,20 +864,11 @@ function confirmarEntrega(){
   var kg=facturaSel.kg_facturados;
   var kgInput=document.getElementById('f-kg').value.trim();
   if(kgInput){var kp=parseFloat(kgInput.replace(',','.'));if(!isNaN(kp)&&kp>0)kg=kp;}
-  var mEf=pagosActivos.has('efectivo')?parseMonto('monto-efectivo'):null;
-  var mTr=pagosActivos.has('transferencia')?parseMonto('monto-transferencia'):null;
-  var mCa=pagosActivos.has('cartera')?parseMonto('monto-cartera'):null;
+  var mEf=pagosActivos.has('efectivo')?parseFloat(document.getElementById('monto-efectivo').value.replace(',','.'))||0:null;
+  var mTr=pagosActivos.has('transferencia')?parseFloat(document.getElementById('monto-transferencia').value.replace(',','.'))||0:null;
+  var mCa=pagosActivos.has('cartera')?parseFloat(document.getElementById('monto-cartera').value.replace(',','.'))||0:null;
   var metodoPago=pagosActivos.size===1?Array.from(pagosActivos)[0]:'parcial';
   var obs=document.getElementById('f-obs').value.trim();
-  var diffCheck=Math.round((kg-facturaSel.kg_facturados)*100)/100;
-  var motivoNovedad=null;
-  if(diffCheck<-0.09){
-    var motivoNormal=document.querySelector('input[name="motivo-normal"]:checked');
-    if(!motivoNormal){showToast('Selecciona el motivo de entrega parcial');return;}
-    var motivoNormalTxt=motivoNormal.value==='otro'?document.getElementById('motivo-normal-otro-txt').value.trim():'';
-    if(motivoNormal.value==='otro'&&!motivoNormalTxt){showToast('Describe el motivo de la entrega parcial');return;}
-    motivoNovedad=motivoNormal.value==='otro'?motivoNormalTxt:motivoNormal.value;
-  }
   showLoading('Subiendo foto...');
   var ext=fotoFactura.name.split('.').pop()||'jpg';
   var ts=Date.now();
@@ -823,7 +881,7 @@ function confirmarEntrega(){
       return pTr.then(function(fotoTrUrl){
         if(fotoEfUrl) obs=(obs?obs+' ':'')+' [FOTO_EF:'+fotoEfUrl+']';
         showLoading('Registrando...');
-        return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:kg,metodo_pago:metodoPago,foto_url:foto_url,foto_comprobante_url:fotoTrUrl,monto_efectivo:mEf,monto_transferencia:mTr,observaciones:obs||null,motivo_novedad:motivoNovedad});
+        return sbPost('entregas',{factura_id:facturaSel.id,kg_recibidos:kg,metodo_pago:metodoPago,foto_url:foto_url,foto_comprobante_url:fotoTrUrl,monto_efectivo:mEf,monto_transferencia:mTr,observaciones:obs||null});
       });
     });
   }).then(function(res){
@@ -849,92 +907,135 @@ async function irAConsignacionesPendientes(){
   try{
   if(!conductorSel){hideLoading();document.getElementById('pend-list').innerHTML='<div class="empty-state"><div class="empty-icon">&#9888;</div><p>Selecciona tu nombre primero</p></div>';return;}
 
-  var bogota=new Date(new Date().getTime()+(-5*60)*60000);
-  var fechas=[];
-  for(var i=1;i<=2;i++){
-    var d=new Date(bogota.getTime());
-    d.setDate(d.getDate()-i);
-    fechas.push(d.toISOString().split('T')[0]);
-  }
-
   var H2={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY};
 
-  // Traer facturas de ayer y anteayer del conductor
-  var facturasAnt=[];
-  for(var fi=0;fi<fechas.length;fi++){
-    var r=await fetch(SUPA_URL+'/rest/v1/facturas?select=id,consecutivo,fecha,kg_facturados,repartidor_id,cliente_id&fecha=eq.'+fechas[fi]+'&repartidor_id=eq.'+conductorSel.id+'&limit=500',{headers:H2});
-    var d=await r.json();
-    if(Array.isArray(d)) facturasAnt=facturasAnt.concat(d);
-  }
+  // Traer TODAS las facturas anteriores del conductor (historial completo)
+  var fRes=await fetch(SUPA_URL+'/rest/v1/facturas?select=id,consecutivo,fecha,kg_facturados,cliente_id&fecha=lte.'+hoy+'&repartidor_id=eq.'+conductorSel.id+'&order=fecha.desc&limit=2000',{headers:H2});
+  var facturasAnt=await fRes.json();
 
-  if(!facturasAnt.length){hideLoading();document.getElementById('pend-list').innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>No hay consignaciones pendientes de dias anteriores</p></div>';return;}
+  if(!Array.isArray(facturasAnt)||!facturasAnt.length){
+    hideLoading();
+    document.getElementById('pend-list').innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>No hay consignaciones pendientes</p></div>';
+    return;
+  }
 
   // Traer clientes
   var cRes=await fetch(SUPA_URL+'/rest/v1/clientes?select=id,nombre&limit=1000',{headers:H2}).then(function(r){return r.ok?r.json():[];});
   var cMap={};(cRes||[]).forEach(function(c){cMap[c.id]=c.nombre;});
 
-  // Traer entregas de esas facturas
+  // Traer entregas con efectivo directamente filtradas por metodo_pago en la DB
   var ids=facturasAnt.map(function(f){return f.id;});
-  var entregasAnt=[];
-  // Split en chunks de 50 para no exceder URL
-  for(var ci=0;ci<ids.length;ci+=50){
-    var chunk=ids.slice(ci,ci+50);
-    var er=await fetch(SUPA_URL+'/rest/v1/entregas?select=id,factura_id,metodo_pago,monto_efectivo&factura_id=in.('+chunk.join(',')+')',{headers:H2});
-    var ed=await er.json();
-    if(Array.isArray(ed)) entregasAnt=entregasAnt.concat(ed);
+  var entregasEfectivo=[];
+  for(var i=0;i<ids.length;i+=50){
+    var chunk=ids.slice(i,i+50);
+    var ed=await fetch(SUPA_URL+'/rest/v1/entregas?select=factura_id,metodo_pago,monto_efectivo&metodo_pago=in.(efectivo,parcial)&monto_efectivo=gt.0&factura_id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+    entregasEfectivo=entregasEfectivo.concat(ed);
   }
-  var entMap={};entregasAnt.forEach(function(e){entMap[e.factura_id]=e;});
+  var entMap={};entregasEfectivo.forEach(function(e){entMap[e.factura_id]=e;});
 
-  // Traer consignaciones ya registradas
-  var crRes=await fetch(SUPA_URL+'/rest/v1/consignacion_facturas?select=factura_id&limit=5000',{headers:H2}).then(function(r){return r.ok?r.json():[];});
-  var yaConsignadas=new Set((crRes||[]).map(function(c){return c.factura_id;}));
+  // IDs que tienen efectivo
+  var efIds=entregasEfectivo.map(function(e){return e.factura_id;});
+
+  if(!efIds.length){
+    hideLoading();
+    document.getElementById('pend-list').innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>No hay consignaciones pendientes</p></div>';
+    return;
+  }
+
+  // Traer ya consignadas
+  var yaConsignadas=new Set();
+  for(var i=0;i<efIds.length;i+=50){
+    var chunk=efIds.slice(i,i+50);
+    var cd=await fetch(SUPA_URL+'/rest/v1/consignacion_facturas?select=factura_id&factura_id=in.('+chunk.join(',')+')',{headers:H2}).then(function(r){return r.ok?r.json():[];});
+    cd.forEach(function(c){yaConsignadas.add(c.factura_id);});
+  }
 
   // Filtrar pendientes
-  var pendientes=facturasAnt.filter(function(f){
-    var e=entMap[f.id];
-    if(!e) return false;
-    if(e.metodo_pago!=='efectivo'&&e.metodo_pago!=='parcial') return false;
-    if(yaConsignadas.has(f.id)) return false;
-    return true;
-  }).map(function(f){
-    return Object.assign({},f,{cliente:cMap[f.cliente_id]||'-',monto_efectivo:entMap[f.id]?entMap[f.id].monto_efectivo:0});
-  });
+  var facturasMap={};facturasAnt.forEach(function(f){facturasMap[f.id]=f;});
+  var pendientes=efIds.filter(function(id){return !yaConsignadas.has(id);}).map(function(id){
+    var f=facturasMap[id];
+    return Object.assign({},f,{cliente:cMap[f.cliente_id]||'-',monto_efectivo:entMap[id].monto_efectivo});
+  }).filter(function(f){return !!f.id;});
 
   hideLoading();
   var list=document.getElementById('pend-list');
   if(!pendientes.length){
-    list.innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>No hay consignaciones pendientes de dias anteriores</p></div>';
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">&#9989;</div><p>No hay consignaciones pendientes</p></div>';
     return;
   }
 
-  var porFecha={};
-  pendientes.forEach(function(f){if(!porFecha[f.fecha])porFecha[f.fecha]=[];porFecha[f.fecha].push(f);});
+  var totalGeneral=pendientes.reduce(function(s,f){return s+f.monto_efectivo;},0);
+  var html='<div style="background:var(--amber-dim);border:1px solid rgba(200,120,32,0.3);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">';
+  html+='<div><div style="font-size:11px;color:var(--amber);font-weight:700;text-transform:uppercase;letter-spacing:1px">Total pendiente</div>';
+  html+='<div style="font-size:12px;color:var(--text3);margin-top:2px">'+pendientes.length+' factura'+(pendientes.length!==1?'s':'')+' sin consignar</div></div>';
+  html+='<div style="font-size:20px;font-weight:700;color:var(--amber)">$'+Math.round(totalGeneral).toLocaleString('es-CO')+'</div>';
+  html+='</div>';
 
-  var html='';
-  Object.keys(porFecha).sort().reverse().forEach(function(fecha){
-    var facts=porFecha[fecha];
-    var totalFecha=facts.reduce(function(s,f){return s+f.monto_efectivo;},0);
-    html+='<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:600;margin-bottom:8px;margin-top:16px">'+fecha+' · $'+Math.round(totalFecha).toLocaleString('es-CO')+'</div>';
-    facts.forEach(function(f){
-      html+='<div class="factura-item pendiente" style="border-left-color:var(--amber)">';
-      html+='<div class="fi-top"><span class="fi-consec">#'+f.consecutivo+'</span><span class="fi-badge pendiente">Sin consignar</span></div>';
-      html+='<div class="fi-cliente">'+f.cliente+'</div>';
-      html+='<div class="fi-meta">Efectivo: $'+Math.round(f.monto_efectivo).toLocaleString('es-CO')+'</div>';
-      html+='</div>';
-    });
-    html+='<button class="btn-confirm" style="margin-top:10px;background:var(--amber)" data-fecha="'+fecha+'" onclick="irAConsignacionFecha(this.getAttribute(\'data-fecha\'))">Registrar consignacion del '+fecha+'</button>';
+  pendientes.forEach(function(f){
+    html+='<div class="consig-item" data-fid="'+f.id+'" data-monto="'+f.monto_efectivo+'" onclick="togglePendiente(this)">';
+    html+='<div class="consig-check" id="pchk-'+f.id+'"></div>';
+    html+='<div class="consig-info"><div class="consig-consec">#'+f.consecutivo+'</div><div class="consig-cliente">'+f.cliente+'</div>';
+    html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+f.fecha+'</div></div>';
+    html+='<div class="consig-monto">$'+Math.round(f.monto_efectivo).toLocaleString('es-CO')+'</div>';
+    html+='</div>';
   });
-  list.innerHTML=html;
 
-  // Guardar para usar en la consignacion
+  html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;margin-top:4px;border-top:1px solid var(--border)">';
+  html+='<div style="font-size:13px;color:var(--text2)"><span id="pend-sel-count">0</span> seleccionada'+(pendientes.length!==1?'s':'')+'</div>';
+  html+='<div style="font-size:15px;font-weight:700;color:var(--amber)" id="pend-sel-total">$0</div></div>';
+  html+='<button class="btn-confirm" style="background:var(--amber)" onclick="registrarPendientesSeleccionadas()">Registrar seleccionadas</button>';
+
+  list.innerHTML=html;
+  pendSeleccionadas=new Set();
   window._facturasAnteriores=pendientes;
-  window._entMapAnt=entMap;
   }catch(e){hideLoading();showToast('Error al cargar. Verifica tu conexion.');console.error(e);}
 }
 
-function irAConsignacionFecha(fecha){
-  // Override hoy temporalmente para usar esa fecha
-  window._consigFechaOverride=fecha;
+var pendSeleccionadas=new Set(); // seleccion en pantalla de pendientes
+
+function togglePendiente(el){
+  var fid=el.getAttribute('data-fid');
+  var chk=document.getElementById('pchk-'+fid);
+  if(pendSeleccionadas.has(fid)){
+    pendSeleccionadas.delete(fid);
+    if(chk){chk.classList.remove('checked');chk.innerHTML='';}
+  } else {
+    pendSeleccionadas.add(fid);
+    if(chk){chk.classList.add('checked');chk.innerHTML='&#10003;';}
+  }
+  var total=0;
+  var facts=window._facturasAnteriores||[];
+  pendSeleccionadas.forEach(function(id){
+    var f=facts.find(function(x){return x.id===id;});
+    if(f) total+=f.monto_efectivo||0;
+  });
+  var countEl=document.getElementById('cpend-count');
+  var totalEl=document.getElementById('cpend-total');
+  var btn=document.getElementById('cpend-btn');
+  var res=document.getElementById('cpend-resumen');
+  if(countEl) countEl.textContent=pendSeleccionadas.size;
+  if(totalEl) totalEl.textContent='$'+Math.round(total).toLocaleString('es-CO');
+  if(btn) btn.style.display=pendSeleccionadas.size>0?'':'none';
+  if(res) res.style.display=pendSeleccionadas.size>0?'flex':'none';
+}
+
+function registrarPendientesSeleccionadas(){
+  if(!pendSeleccionadas.size){showToast('Selecciona al menos una factura');return;}
+  var facts=(window._facturasAnteriores||[]).filter(function(f){return pendSeleccionadas.has(f.id);});
+  consigSeleccionadas=new Set();
+  var html='<div class="sec-title" style="margin-bottom:12px">Facturas pendientes seleccionadas</div>';
+  facts.forEach(function(f){
+    var monto=f.monto_efectivo||0;
+    html+='<div class="consig-item" data-fid="'+f.id+'" data-monto="'+monto+'" onclick="toggleConsig(this)">';
+    html+='<div class="consig-check checked" id="chk-'+f.id+'">&#10003;</div>';
+    html+='<div class="consig-info"><div class="consig-consec">#'+f.consecutivo+'</div><div class="consig-cliente">'+f.cliente+'</div>';
+    html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+f.fecha+'</div></div>';
+    html+='<div class="consig-monto">$'+Math.round(monto).toLocaleString('es-CO')+'</div>';
+    html+='</div>';
+    consigSeleccionadas.add(f.id);
+  });
+  document.getElementById('consig-facturas-list').innerHTML=html;
+  window._consigFechaOverride=null;
   mostrarPantalla('screen-consignacion');
   document.getElementById('consig-success').classList.remove('show');
   document.getElementById('consig-success').style.display='none';
@@ -942,25 +1043,8 @@ function irAConsignacionFecha(fecha){
   document.getElementById('consig-obs').value='';
   document.getElementById('photo-consig-file').value='';
   document.getElementById('photo-consig-zone').classList.remove('has-photo');
-  renderConsigFacturasParaFecha(fecha);
-}
-
-function renderConsigFacturasParaFecha(fecha){
-  var facts=(window._facturasAnteriores||[]).filter(function(f){return f.fecha===fecha;});
-  consigSeleccionadas=new Set();
-  var list=document.getElementById('consig-facturas-list');
-  var html='<div class="sec-title" style="margin-bottom:12px">Facturas con efectivo del '+fecha+'</div>';
-  facts.forEach(function(f){
-    var monto=f.monto_efectivo||0;
-    html+='<div class="consig-item" data-fid="'+f.id+'" data-monto="'+monto+'" onclick="toggleConsig(this)">';
-    html+='<div class="consig-check" id="chk-'+f.id+'"></div>';
-    html+='<div class="consig-info"><div class="consig-consec">#'+f.consecutivo+'</div><div class="consig-cliente">'+f.cliente+'</div></div>';
-    html+='<div class="consig-monto">$'+Math.round(monto).toLocaleString('es-CO')+'</div>';
-    html+='</div>';
-  });
-  list.innerHTML=html;
-  actualizarTotalConsig();
   document.querySelector('#screen-consignacion .btn-confirm').style.display='';
+  actualizarTotalConsig();
 }
 
 function irAConsignacion(){
@@ -971,12 +1055,7 @@ function irAConsignacion(){
   document.getElementById('consig-obs').value='';
   document.getElementById('photo-consig-file').value='';
   document.getElementById('photo-consig-zone').classList.remove('has-photo');
-  showLoading('Cargando facturas...');
-  sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
-    todasEntregas=data||[];
-    hideLoading();
-    renderConsigFacturas();
-  }).catch(function(){hideLoading();renderConsigFacturas();});
+  renderConsigFacturas();
 }
 
 var consigSeleccionadas=new Set();
@@ -991,7 +1070,7 @@ function renderConsigFacturas(){
   todasEntregas.forEach(function(e){entregaMap[e.factura_id]=e;});
   var conEfectivo=misFacturas.filter(function(f){
     var e=entregaMap[f.id];
-    return e&&(e.metodo_pago==='efectivo'||e.metodo_pago==='parcial');
+    return e&&(e.metodo_pago==='efectivo'||e.metodo_pago==='parcial')&&e.monto_efectivo>0;
   });
 
   var list=document.getElementById('consig-facturas-list');
@@ -1117,10 +1196,6 @@ function mostrarSuccess(entrega){
 
 function resetFormFields(){
   ['f-kg','f-obs','monto-efectivo','monto-transferencia','monto-cartera'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  document.querySelectorAll('input[name="motivo-dev"],input[name="motivo-normal"]').forEach(function(r){r.checked=false;});
-  ['motivo-dev-list','motivo-normal-list'].forEach(function(lid){var l=document.getElementById(lid);if(l)l.querySelectorAll('.motivo-item').forEach(function(i){i.classList.remove('seleccionado');});});
-  ['motivo-dev-otro-txt','motivo-normal-otro-txt'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.display='none';el.value='';}});
-  document.getElementById('card-motivo-normal').style.display='none';
   ['photo-file','photo-dev-file','foto-ef-file','foto-tr-file'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   ['photo-zone','photo-dev-zone','foto-ef-zone','foto-tr-zone'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('has-photo');});
   ['efectivo','transferencia','cartera'].forEach(function(t){document.getElementById('pcheck-'+t).classList.remove('activo');document.getElementById('detalle-'+t).classList.remove('show');});
@@ -1145,6 +1220,7 @@ function mostrarPantalla(id){
     sbGet('entregas','select=id,factura_id,kg_recibidos,metodo_pago,monto_efectivo,registrado_en&registrado_en=gte.'+getDiasAtras(30)+'T00:00:00&order=registrado_en.desc&limit=2000').then(function(data){
       todasEntregas=data||[];
       renderFacturasDelDia();
+      cargarConsignacionesInline();
     });
   }
 }
